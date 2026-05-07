@@ -36,7 +36,7 @@ body{background:#050D1A;color:#e0ddd8;font-family:'Raleway',sans-serif;font-weig
 #screen-consultation.active{display:flex;height:100vh;overflow:hidden;}
 
 /* ── NAME SCREEN ── */
-#screen-name{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;}
+#screen-name{min-height:100vh;display:flex;flex-direction:column;}
 .name-card{background:linear-gradient(145deg,#0F2645,#0B1D3A);border:1px solid rgba(196,164,90,.22);border-radius:6px;padding:3rem 2.5rem;max-width:440px;width:100%;text-align:center;}
 .name-card-brand{display:block;margin-bottom:1.8rem;font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:300;letter-spacing:.25em;color:#C4A45A;text-transform:uppercase;}
 .name-card h2{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;margin-bottom:.4rem;}
@@ -271,7 +271,7 @@ body{background:#050D1A;color:#e0ddd8;font-family:'Raleway',sans-serif;font-weig
     <div class="brand">MD <em>Talk</em></div>
     <div class="header-badge">Virtual Patient Simulator</div>
   </header>
-  <div id="screen-name-body" style="min-height:calc(100vh - 56px);display:flex;align-items:center;justify-content:center;padding:2rem;">
+  <div id="screen-name-body" style="flex:1;display:flex;align-items:center;justify-content:center;padding:2rem;">
     <div class="name-card">
       <span class="name-card-brand">MD <em style="font-style:italic">Talk</em></span>
       <h2>Welcome to the<br><em>Simulation Lab</em></h2>
@@ -567,13 +567,20 @@ async function callAPI(system, messages) {
 // SCREENS
 // ════════════════════════════════════════
 function showScreen(id) {
-  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  // hide all screens
+  document.querySelectorAll(".screen").forEach(s => {
+    s.classList.remove("active");
+    s.style.display = "none";
+  });
   const consult = document.getElementById("screen-consultation");
   consult.style.display = "none";
+
   if (id === "screen-consultation") {
     consult.style.display = "flex";
   } else {
-    document.getElementById(id).classList.add("active");
+    const target = document.getElementById(id);
+    target.style.display = "flex";
+    target.classList.add("active");
   }
   window.scrollTo(0,0);
 }
@@ -581,18 +588,28 @@ function showScreen(id) {
 function enterLab() {
   const input = document.getElementById("student-name-input");
   const name = input.value.trim();
-  if (!name) { input.focus(); input.style.borderColor = "rgba(224,112,112,.6)"; return; }
+  if (!name) {
+    input.focus();
+    input.style.borderColor = "rgba(224,112,112,.6)";
+    input.placeholder = "Please enter your name first";
+    return;
+  }
   studentName = name;
   document.getElementById("student-badge").textContent = name;
-  showScreen("screen-cases");
-  renderCases();
+  showCases();
 }
 
 function showCases() {
   activeCase = null; chatHistory = []; doctorTurns = [];
   grammarLog = []; stats = {turns:0,errors:0,perfect:0};
   tenseCounts = {ps:0,pp:0,ppc:0,prs:0};
-  showScreen("screen-cases");
+  // hide all, show cases as block
+  document.querySelectorAll(".screen").forEach(s => { s.classList.remove("active"); s.style.display = "none"; });
+  document.getElementById("screen-consultation").style.display = "none";
+  const casesEl = document.getElementById("screen-cases");
+  casesEl.style.display = "block";
+  casesEl.classList.add("active");
+  window.scrollTo(0,0);
   renderCases();
 }
 
@@ -984,6 +1001,13 @@ function fbItem(type, icon, text) {
 // INIT
 // ════════════════════════════════════════
 document.addEventListener("DOMContentLoaded", () => {
+  // Set initial screen
+  document.querySelectorAll(".screen").forEach(s => { s.style.display = "none"; s.classList.remove("active"); });
+  document.getElementById("screen-consultation").style.display = "none";
+  const nameScreen = document.getElementById("screen-name");
+  nameScreen.style.display = "flex";
+  nameScreen.classList.add("active");
+
   document.getElementById("student-name-input").addEventListener("keydown", e => {
     if (e.key === "Enter") enterLab();
   });
