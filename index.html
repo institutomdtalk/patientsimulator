@@ -6,11 +6,6 @@
 <title>MD Talk — Virtual Patient Simulator</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-/* ─────────────────────────────────────────
-   CONFIGURE AQUI: cole a URL do seu Worker
-   ───────────────────────────────────────── */
-/* (a URL é definida no JS abaixo, procure por WORKER_URL) */
-
 :root {
   --navy:       #0B1D3A;
   --navy-deep:  #050D1A;
@@ -19,336 +14,272 @@
   --gold:       #C4A45A;
   --gold-light: #D4BA7A;
   --gold-pale:  #E8D9B0;
-  --cream:      rgba(255,255,255,.88);
+  --cream:      #e0ddd8;
   --muted:      rgba(255,255,255,.42);
   --green:      #4CAF7D;
   --red:        #E07070;
+  --panel-w:    300px;
 }
-
 *{margin:0;padding:0;box-sizing:border-box;}
-
-body{
-  background:var(--navy-deep);
-  color:var(--cream);
-  font-family:'Raleway',sans-serif;
-  font-weight:400;
-  min-height:100vh;
-  overflow-x:hidden;
-}
+body{background:#050D1A;color:#e0ddd8;font-family:'Raleway',sans-serif;font-weight:400;min-height:100vh;overflow-x:hidden;}
 
 /* ── HEADER ── */
-.header{
-  padding:1.2rem 2.5rem;
-  border-bottom:1px solid rgba(196,164,90,.18);
-  display:flex;align-items:center;justify-content:space-between;
-  position:sticky;top:0;z-index:50;
-  background:rgba(5,13,26,.96);
-  backdrop-filter:blur(8px);
-}
-.brand{
-  font-family:'Cormorant Garamond',serif;
-  font-size:1rem;font-weight:300;
-  letter-spacing:.25em;color:var(--gold);text-transform:uppercase;
-}
-.brand em{font-style:italic;color:var(--gold-light);}
-.header-badge{
-  font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;
-  color:var(--muted);border:1px solid rgba(196,164,90,.22);
-  padding:.28rem .75rem;border-radius:2px;
-}
+.header{padding:1.1rem 2rem;border-bottom:1px solid rgba(196,164,90,.18);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;background:rgba(5,13,26,.97);backdrop-filter:blur(8px);}
+.brand{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:300;letter-spacing:.25em;color:#C4A45A;text-transform:uppercase;}
+.brand em{font-style:italic;color:#D4BA7A;}
+.header-badge{font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.4);border:1px solid rgba(196,164,90,.22);padding:.25rem .7rem;border-radius:2px;}
 
 /* ── SCREEN MANAGEMENT ── */
 .screen{display:none;}
 .screen.active{display:block;}
-#screen-consultation.active,
 #screen-consultation{display:none;}
-#screen-consultation.active{display:flex;flex-direction:column;height:100vh;}
+#screen-consultation.active{display:flex;height:100vh;overflow:hidden;}
+
+/* ── NAME SCREEN ── */
+#screen-name{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;}
+.name-card{background:linear-gradient(145deg,#0F2645,#0B1D3A);border:1px solid rgba(196,164,90,.22);border-radius:6px;padding:3rem 2.5rem;max-width:440px;width:100%;text-align:center;}
+.name-card-brand{display:block;margin-bottom:1.8rem;font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:300;letter-spacing:.25em;color:#C4A45A;text-transform:uppercase;}
+.name-card h2{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;margin-bottom:.4rem;}
+.name-card h2 em{font-style:italic;color:#C4A45A;}
+.name-card p{font-size:.78rem;color:rgba(255,255,255,.42);line-height:1.7;margin-bottom:1.8rem;font-weight:300;}
+.name-divider{width:2rem;height:1px;background:#C4A45A;opacity:.5;margin:1.1rem auto;}
+#student-name-input{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(196,164,90,.3);border-radius:4px;padding:.85rem 1rem;color:#e0ddd8;font-family:'Raleway',sans-serif;font-size:.9rem;outline:none;transition:border-color .2s;text-align:center;letter-spacing:.03em;margin-bottom:1.1rem;}
+#student-name-input:focus{border-color:rgba(196,164,90,.65);}
+#student-name-input::placeholder{color:rgba(255,255,255,.2);font-style:italic;}
+.name-enter-btn{width:100%;padding:.82rem;background:transparent;border:1px solid rgba(196,164,90,.45);color:#C4A45A;font-family:'Raleway',sans-serif;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;border-radius:4px;transition:all .25s;}
+.name-enter-btn:hover{background:#C4A45A;color:#050D1A;}
 
 /* ── CASES SCREEN ── */
-.cases-hero{
-  padding:3.5rem 2.5rem 1.5rem;
-  max-width:900px;margin:0 auto;width:100%;
-}
-.overline{
-  font-size:.6rem;letter-spacing:.25em;text-transform:uppercase;
-  color:var(--gold);display:block;margin-bottom:.9rem;
-}
-.cases-hero h1{
-  font-family:'Cormorant Garamond',serif;
-  font-size:clamp(2rem,5vw,3.2rem);font-weight:300;line-height:1.15;
-  margin-bottom:.5rem;
-}
-.cases-hero h1 em{font-style:italic;color:var(--gold);}
-.divider{width:2.5rem;height:1px;background:var(--gold);opacity:.55;margin:1.2rem 0;}
-.cases-hero p{font-size:.8rem;color:var(--muted);line-height:1.8;max-width:480px;font-weight:300;}
+#screen-cases.active{display:block;}
+.cases-hero{padding:3rem 2.5rem 1.2rem;max-width:960px;margin:0 auto;width:100%;}
+.overline{font-size:.6rem;letter-spacing:.25em;text-transform:uppercase;color:#C4A45A;display:block;margin-bottom:.8rem;}
+.cases-hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(1.9rem,5vw,3rem);font-weight:300;line-height:1.15;margin-bottom:.4rem;}
+.cases-hero h1 em{font-style:italic;color:#C4A45A;}
+.divider{width:2.5rem;height:1px;background:#C4A45A;opacity:.55;margin:1rem 0;}
+.cases-hero p{font-size:.79rem;color:rgba(255,255,255,.42);line-height:1.8;max-width:480px;font-weight:300;}
 
-.cases-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
-  gap:1.2rem;
-  padding:1.5rem 2.5rem 4rem;
-  max-width:900px;margin:0 auto;width:100%;
-}
+/* Section labels */
+.section-label{font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.3);padding:.5rem 2.5rem 0;max-width:960px;margin:0 auto;width:100%;}
 
-.case-card{
-  background:linear-gradient(145deg,var(--navy-mid),var(--navy));
-  border:1px solid rgba(196,164,90,.16);
-  border-radius:4px;padding:1.6rem;cursor:pointer;
-  transition:border-color .25s,transform .25s,box-shadow .25s;
-  position:relative;overflow:hidden;
-}
-.case-card::before{
-  content:'';position:absolute;top:0;left:0;width:100%;height:2px;
-  background:linear-gradient(90deg,transparent,var(--gold),transparent);
-  opacity:0;transition:opacity .3s;
-}
+.cases-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:1.1rem;padding:0.6rem 2.5rem 4rem;max-width:960px;margin:0 auto;width:100%;}
+
+.case-card{background:linear-gradient(145deg,#0F2645,#0B1D3A);border:1px solid rgba(196,164,90,.15);border-radius:4px;padding:1.5rem;cursor:pointer;transition:border-color .25s,transform .25s,box-shadow .25s;position:relative;overflow:hidden;}
+.case-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:2px;background:linear-gradient(90deg,transparent,#C4A45A,transparent);opacity:0;transition:opacity .3s;}
 .case-card:hover{border-color:rgba(196,164,90,.45);transform:translateY(-3px);box-shadow:0 12px 36px rgba(0,0,0,.4);}
 .case-card:hover::before{opacity:1;}
+.case-card.grammar-focus{border-color:rgba(196,164,90,.35);background:linear-gradient(145deg,#12213d,#0a1828);}
 
-.case-specialty{font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:.6rem;}
-.case-name{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:400;margin-bottom:.2rem;}
-.case-age{font-size:.68rem;color:var(--muted);margin-bottom:1rem;}
-.case-complaint{
-  font-size:.76rem;color:rgba(255,255,255,.6);line-height:1.6;font-style:italic;
-  border-left:2px solid rgba(196,164,90,.3);padding-left:.7rem;margin-bottom:1.2rem;
-}
-.case-meta{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;}
-.tag{font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;padding:.22rem .6rem;border-radius:2px;border:1px solid;}
-.tag-1{border-color:rgba(76,175,125,.4);color:var(--green);}
-.tag-2{border-color:rgba(196,164,90,.4);color:var(--gold);}
-.tag-3{border-color:rgba(224,112,112,.4);color:var(--red);}
-.tag-sp{border-color:rgba(255,255,255,.12);color:var(--muted);}
+.grammar-badge{display:inline-flex;align-items:center;gap:.35rem;font-size:.56rem;letter-spacing:.15em;text-transform:uppercase;background:rgba(196,164,90,.15);border:1px solid rgba(196,164,90,.4);color:#C4A45A;padding:.22rem .65rem;border-radius:2px;margin-bottom:.7rem;}
+.grammar-badge::before{content:'◆';font-size:.5rem;}
 
-.case-btn{
-  width:100%;padding:.65rem;background:transparent;
-  border:1px solid rgba(196,164,90,.35);color:var(--gold);
-  font-family:'Raleway',sans-serif;font-size:.62rem;
-  letter-spacing:.18em;text-transform:uppercase;cursor:pointer;
-  border-radius:2px;transition:all .2s;
-}
-.case-btn:hover{background:var(--gold);color:var(--navy-deep);}
+.case-specialty{font-size:.56rem;letter-spacing:.2em;text-transform:uppercase;color:#C4A45A;margin-bottom:.55rem;}
+.case-name{font-family:'Cormorant Garamond',serif;font-size:1.35rem;font-weight:400;margin-bottom:.2rem;}
+.case-age{font-size:.67rem;color:rgba(255,255,255,.4);margin-bottom:.9rem;}
+.case-complaint{font-size:.75rem;color:rgba(255,255,255,.58);line-height:1.6;font-style:italic;border-left:2px solid rgba(196,164,90,.28);padding-left:.65rem;margin-bottom:1.1rem;}
+.case-meta{display:flex;gap:.45rem;flex-wrap:wrap;margin-bottom:.9rem;}
+.tag{font-size:.54rem;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .55rem;border-radius:2px;border:1px solid;}
+.tag-1{border-color:rgba(76,175,125,.4);color:#4CAF7D;}
+.tag-2{border-color:rgba(196,164,90,.4);color:#C4A45A;}
+.tag-3{border-color:rgba(224,112,112,.4);color:#E07070;}
+.tag-sp{border-color:rgba(255,255,255,.1);color:rgba(255,255,255,.4);}
+.tag-grammar{border-color:rgba(196,164,90,.5);color:#D4BA7A;background:rgba(196,164,90,.08);}
+.case-btn{width:100%;padding:.62rem;background:transparent;border:1px solid rgba(196,164,90,.32);color:#C4A45A;font-family:'Raleway',sans-serif;font-size:.6rem;letter-spacing:.17em;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:all .2s;}
+.case-btn:hover{background:#C4A45A;color:#050D1A;}
 
 /* ── CONSULTATION SCREEN ── */
-#screen-consultation{
-  position:fixed;inset:0;z-index:20;
-  background:var(--navy-deep);
-  flex-direction:column;
-}
-.consult-header{
-  padding:.85rem 1.8rem;
-  border-bottom:1px solid rgba(196,164,90,.13);
-  display:flex;align-items:center;gap:1rem;
-  flex-shrink:0;background:var(--navy-deep);
-}
-.back-btn{
-  background:none;border:none;color:var(--muted);cursor:pointer;
-  font-family:'Raleway',sans-serif;font-size:.62rem;
-  letter-spacing:.1em;text-transform:uppercase;transition:color .2s;
-  white-space:nowrap;
-}
-.back-btn:hover{color:var(--gold);}
-.patient-avatar{
-  width:32px;height:32px;border-radius:50%;
-  background:linear-gradient(135deg,var(--navy-light),var(--navy-mid));
-  border:1px solid rgba(196,164,90,.28);
-  display:flex;align-items:center;justify-content:center;
-  font-family:'Cormorant Garamond',serif;font-size:.85rem;color:var(--gold);
-  flex-shrink:0;
-}
-.patient-name-bar{font-family:'Cormorant Garamond',serif;font-size:1rem;}
-.patient-sub-bar{font-size:.58rem;color:var(--muted);}
-.status-dot{
-  width:6px;height:6px;border-radius:50%;background:var(--green);
-  box-shadow:0 0 5px rgba(76,175,125,.6);
-  animation:pulse-dot 2s infinite;margin-left:auto;flex-shrink:0;
-}
-.end-btn{
-  background:none;border:1px solid rgba(224,112,112,.3);color:var(--red);
-  padding:.32rem .85rem;font-family:'Raleway',sans-serif;
-  font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;
-  cursor:pointer;border-radius:2px;transition:background .2s;white-space:nowrap;
-}
+#screen-consultation{flex-direction:row;position:fixed;inset:0;z-index:20;background:#050D1A;}
+
+/* Main chat column */
+.consult-main{display:flex;flex-direction:column;flex:1;min-width:0;overflow:hidden;}
+.consult-header{padding:.82rem 1.5rem;border-bottom:1px solid rgba(196,164,90,.12);display:flex;align-items:center;gap:.9rem;flex-shrink:0;background:#050D1A;}
+.back-btn{background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;font-family:'Raleway',sans-serif;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;transition:color .2s;white-space:nowrap;}
+.back-btn:hover{color:#C4A45A;}
+.patient-avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#163158,#0F2645);border:1px solid rgba(196,164,90,.26);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:.8rem;color:#C4A45A;flex-shrink:0;}
+.patient-name-bar{font-family:'Cormorant Garamond',serif;font-size:.95rem;}
+.patient-sub-bar{font-size:.56rem;color:rgba(255,255,255,.38);}
+.status-dot{width:6px;height:6px;border-radius:50%;background:#4CAF7D;box-shadow:0 0 5px rgba(76,175,125,.6);animation:pulse-dot 2s infinite;margin-left:auto;flex-shrink:0;}
+.end-btn{background:none;border:1px solid rgba(224,112,112,.28);color:#E07070;padding:.3rem .8rem;font-family:'Raleway',sans-serif;font-size:.58rem;letter-spacing:.11em;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:background .2s;white-space:nowrap;}
 .end-btn:hover{background:rgba(224,112,112,.1);}
 
-.chat-area{
-  flex:1;overflow-y:auto;
-  padding:1.5rem 1.8rem;
-  display:flex;flex-direction:column;gap:1rem;
-  scroll-behavior:smooth;
-}
+.chat-area{flex:1;overflow-y:auto;padding:1.3rem 1.5rem;display:flex;flex-direction:column;gap:.9rem;scroll-behavior:smooth;}
 .chat-area::-webkit-scrollbar{width:3px;}
-.chat-area::-webkit-scrollbar-thumb{background:rgba(196,164,90,.18);border-radius:2px;}
+.chat-area::-webkit-scrollbar-thumb{background:rgba(196,164,90,.15);border-radius:2px;}
 
-.msg{display:flex;gap:.7rem;max-width:580px;animation:fadeUp .3s ease;}
+.msg{display:flex;gap:.65rem;max-width:520px;animation:fadeUp .3s ease;}
 .msg.doctor{align-self:flex-end;flex-direction:row-reverse;}
 .msg.patient{align-self:flex-start;}
-.msg.sys{align-self:center;max-width:420px;}
+.msg.sys{align-self:center;max-width:380px;}
 
-.msg-av{
-  width:28px;height:28px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:.75rem;flex-shrink:0;
-  font-family:'Cormorant Garamond',serif;margin-top:.2rem;
-}
-.msg.patient .msg-av{background:linear-gradient(135deg,var(--navy-light),var(--navy-mid));border:1px solid rgba(196,164,90,.25);color:var(--gold);}
-.msg.doctor .msg-av{background:rgba(196,164,90,.1);border:1px solid rgba(196,164,90,.35);color:var(--gold-light);}
+.msg-av{width:27px;height:27px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;flex-shrink:0;font-family:'Cormorant Garamond',serif;margin-top:.2rem;}
+.msg.patient .msg-av{background:linear-gradient(135deg,#163158,#0F2645);border:1px solid rgba(196,164,90,.22);color:#C4A45A;}
+.msg.doctor .msg-av{background:rgba(196,164,90,.1);border:1px solid rgba(196,164,90,.32);color:#D4BA7A;}
 
-.msg-lbl{font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.22rem;}
+.msg-lbl{font-size:.54rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:.2rem;}
 .msg.doctor .msg-lbl{text-align:right;}
 
-.bubble{padding:.75rem 1rem;border-radius:4px;font-size:.81rem;line-height:1.7;}
+.bubble{padding:.72rem .95rem;border-radius:4px;font-size:.8rem;line-height:1.7;}
 .msg.patient .bubble{background:#0F2645;border:1px solid rgba(196,164,90,.1);color:#e0ddd8;border-bottom-left-radius:0;}
-.msg.doctor .bubble{background:rgba(196,164,90,.09);border:1px solid rgba(196,164,90,.22);color:#E8D9B0;border-bottom-right-radius:0;}
-.msg.sys .bubble{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);color:rgba(255,255,255,.5);font-size:.7rem;text-align:center;font-style:italic;border-radius:4px;}
+.msg.doctor .bubble{background:rgba(196,164,90,.08);border:1px solid rgba(196,164,90,.2);color:#E8D9B0;border-bottom-right-radius:0;}
+.msg.sys .bubble{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);color:rgba(255,255,255,.4);font-size:.68rem;text-align:center;font-style:italic;border-radius:4px;}
 
-.typing{
-  display:none;gap:.35rem;align-items:center;
-  padding:.65rem 1rem;background:var(--navy-mid);
-  border:1px solid rgba(196,164,90,.1);border-radius:4px;
-  border-bottom-left-radius:0;align-self:flex-start;
+/* Grammar inline note under doctor messages */
+.grammar-note{
+  font-size:.68rem;line-height:1.55;
+  margin-top:.3rem;
+  padding:.4rem .7rem;
+  border-radius:3px;
+  border-left:2px solid rgba(196,164,90,.5);
+  background:rgba(196,164,90,.06);
+  color:rgba(255,255,255,.55);
+  max-width:100%;
+  animation:fadeUp .4s ease;
 }
+.grammar-note.has-errors{border-left-color:rgba(224,112,112,.6);background:rgba(224,112,112,.05);}
+.grammar-note.perfect{border-left-color:rgba(76,175,125,.5);background:rgba(76,175,125,.05);color:rgba(76,175,125,.8);}
+.grammar-note-label{font-size:.54rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:.2rem;}
+
+.typing{display:none;gap:.32rem;align-items:center;padding:.62rem .9rem;background:#0F2645;border:1px solid rgba(196,164,90,.09);border-radius:4px;border-bottom-left-radius:0;align-self:flex-start;}
 .typing.show{display:flex;}
-.dot{width:5px;height:5px;border-radius:50%;background:var(--gold);opacity:.4;animation:bounce .9s infinite;}
+.dot{width:4px;height:4px;border-radius:50%;background:#C4A45A;opacity:.4;animation:bounce .9s infinite;}
 .dot:nth-child(2){animation-delay:.15s;}
 .dot:nth-child(3){animation-delay:.3s;}
 
-.input-area{
-  padding:1rem 1.8rem;
-  border-top:1px solid rgba(196,164,90,.1);
-  background:var(--navy-deep);flex-shrink:0;
+.input-area{padding:.9rem 1.5rem;border-top:1px solid rgba(196,164,90,.09);background:#050D1A;flex-shrink:0;}
+.input-hint{font-size:.57rem;color:rgba(255,255,255,.28);letter-spacing:.07em;text-align:center;margin-bottom:.45rem;}
+.input-row{display:flex;gap:.55rem;align-items:center;}
+#msg-input{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(196,164,90,.18);border-radius:4px;padding:.68rem .9rem;color:#e0ddd8;font-family:'Raleway',sans-serif;font-size:.8rem;outline:none;transition:border-color .2s;}
+#msg-input:focus{border-color:rgba(196,164,90,.48);}
+#msg-input::placeholder{color:rgba(255,255,255,.16);font-style:italic;}
+.send-btn{background:#C4A45A;border:none;border-radius:4px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;color:#050D1A;transition:all .2s;}
+.send-btn:hover{background:#D4BA7A;}
+.send-btn:disabled{opacity:.28;cursor:not-allowed;}
+
+/* ── GRAMMAR PANEL ── */
+.grammar-panel{
+  width:var(--panel-w);flex-shrink:0;
+  background:#080f1e;
+  border-left:1px solid rgba(196,164,90,.14);
+  display:flex;flex-direction:column;
+  overflow:hidden;
 }
-.input-hint{font-size:.58rem;color:var(--muted);letter-spacing:.07em;text-align:center;margin-bottom:.5rem;}
-.input-row{display:flex;gap:.6rem;align-items:center;max-width:680px;margin:0 auto;}
-#msg-input{
-  flex:1;background:rgba(255,255,255,.04);
-  border:1px solid rgba(196,164,90,.2);border-radius:4px;
-  padding:.72rem 1rem;color:var(--cream);
-  font-family:'Raleway',sans-serif;font-size:.81rem;
-  outline:none;transition:border-color .2s;
+.panel-header{
+  padding:1rem 1.2rem;
+  border-bottom:1px solid rgba(196,164,90,.12);
+  flex-shrink:0;
 }
-#msg-input:focus{border-color:rgba(196,164,90,.5);}
-#msg-input::placeholder{color:rgba(255,255,255,.18);font-style:italic;}
-.send-btn{
-  background:var(--gold);border:none;border-radius:4px;
-  width:40px;height:40px;display:flex;align-items:center;justify-content:center;
-  cursor:pointer;flex-shrink:0;color:var(--navy-deep);transition:all .2s;
+.panel-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1rem;font-weight:400;
+  margin-bottom:.15rem;
 }
-.send-btn:hover{background:var(--gold-light);}
-.send-btn:disabled{opacity:.3;cursor:not-allowed;}
+.panel-title em{font-style:italic;color:#C4A45A;}
+.panel-sub{font-size:.58rem;color:rgba(255,255,255,.32);letter-spacing:.06em;}
+.panel-stats{
+  display:flex;gap:.6rem;margin-top:.8rem;
+}
+.stat-box{
+  flex:1;background:rgba(255,255,255,.03);
+  border:1px solid rgba(196,164,90,.1);
+  border-radius:3px;padding:.5rem .4rem;text-align:center;
+}
+.stat-num{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;color:#C4A45A;line-height:1;}
+.stat-lbl{font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-top:.15rem;}
+
+.panel-body{flex:1;overflow-y:auto;padding:.8rem 1rem;}
+.panel-body::-webkit-scrollbar{width:2px;}
+.panel-body::-webkit-scrollbar-thumb{background:rgba(196,164,90,.12);}
+
+.panel-empty{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  height:100%;text-align:center;padding:2rem;
+  color:rgba(255,255,255,.2);font-size:.72rem;line-height:1.7;
+}
+.panel-empty-icon{font-size:1.8rem;margin-bottom:.8rem;opacity:.3;}
+
+.correction-entry{
+  margin-bottom:1rem;
+  padding:.8rem;
+  background:rgba(255,255,255,.025);
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:3px;
+  animation:fadeUp .35s ease;
+}
+.correction-entry.perfect{border-color:rgba(76,175,125,.2);background:rgba(76,175,125,.03);}
+.correction-entry.has-errors{border-color:rgba(224,112,112,.15);background:rgba(224,112,112,.03);}
+
+.correction-turn{font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.22);margin-bottom:.4rem;}
+.correction-original{font-size:.73rem;color:rgba(255,255,255,.5);margin-bottom:.4rem;font-style:italic;line-height:1.5;}
+.correction-fixed{font-size:.73rem;color:#D4BA7A;margin-bottom:.5rem;line-height:1.5;}
+.correction-fixed strong{color:#C4A45A;}
+.correction-comment{font-size:.68rem;color:rgba(255,255,255,.45);line-height:1.55;}
+.correction-tenses{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.45rem;}
+.tense-tag{font-size:.52rem;letter-spacing:.08em;text-transform:uppercase;padding:.16rem .5rem;border-radius:2px;border:1px solid rgba(196,164,90,.3);color:#C4A45A;background:rgba(196,164,90,.06);}
+.tense-tag.used{border-color:rgba(76,175,125,.4);color:#4CAF7D;background:rgba(76,175,125,.06);}
+.perfect-mark{font-size:.68rem;color:#4CAF7D;}
 
 /* ── FEEDBACK SCREEN ── */
-.feedback-body{max-width:700px;margin:0 auto;padding:2.5rem 2.5rem 5rem;width:100%;}
-.score-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin:1.5rem 0;}
-.score-card{background:var(--navy-mid);border:1px solid rgba(196,164,90,.16);border-radius:4px;padding:1.5rem;text-align:center;}
-.score-num{font-family:'Cormorant Garamond',serif;font-size:3.5rem;font-weight:300;color:var(--gold);line-height:1;}
-.score-lbl{font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-top:.3rem;}
-.fb-section{margin-top:2rem;}
-.fb-section h3{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:400;margin-bottom:.7rem;padding-bottom:.4rem;border-bottom:1px solid rgba(196,164,90,.18);}
-.fb-item{display:flex;gap:.65rem;margin-bottom:.75rem;font-size:.79rem;line-height:1.6;color:rgba(255,255,255,.72);}
+#screen-feedback.active{display:block;}
+.feedback-body{max-width:700px;margin:0 auto;padding:2.5rem 2rem 5rem;width:100%;}
+.score-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;margin:1.4rem 0;}
+.score-card{background:#0F2645;border:1px solid rgba(196,164,90,.15);border-radius:4px;padding:1.4rem;text-align:center;}
+.score-num{font-family:'Cormorant Garamond',serif;font-size:3.5rem;font-weight:300;color:#C4A45A;line-height:1;}
+.score-lbl{font-size:.58rem;letter-spacing:.13em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-top:.25rem;}
+.fb-section{margin-top:1.8rem;}
+.fb-section h3{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:400;margin-bottom:.65rem;padding-bottom:.4rem;border-bottom:1px solid rgba(196,164,90,.15);}
+.fb-item{display:flex;gap:.6rem;margin-bottom:.7rem;font-size:.78rem;line-height:1.6;color:rgba(255,255,255,.68);}
 .fb-icon{flex-shrink:0;margin-top:.1rem;}
-.fb-item.good .fb-icon{color:var(--green);}
-.fb-item.improve .fb-icon{color:var(--gold);}
-.fb-item.miss .fb-icon{color:var(--red);}
-.restart-btn{
-  margin-top:2.5rem;padding:.8rem 2rem;background:transparent;
-  border:1px solid rgba(196,164,90,.35);color:var(--gold);
-  font-family:'Raleway',sans-serif;font-size:.68rem;
-  letter-spacing:.18em;text-transform:uppercase;cursor:pointer;
-  border-radius:2px;transition:all .25s;display:inline-block;
-}
-.restart-btn:hover{background:var(--gold);color:var(--navy-deep);}
+.fb-item.good .fb-icon{color:#4CAF7D;}
+.fb-item.improve .fb-icon{color:#C4A45A;}
+.fb-item.miss .fb-icon{color:#E07070;}
 
-/* ── LOADING OVERLAY ── */
-#loading-overlay{
-  display:none;position:fixed;inset:0;
-  background:rgba(5,13,26,.92);z-index:100;
-  align-items:center;justify-content:center;flex-direction:column;gap:1.5rem;
-}
+/* Grammar summary in feedback */
+.tenses-used-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.7rem;margin-top:.8rem;}
+.tense-summary-card{background:#0F2645;border:1px solid rgba(196,164,90,.12);border-radius:3px;padding:.9rem;text-align:center;}
+.tense-count{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:#C4A45A;line-height:1;}
+.tense-name{font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-top:.2rem;}
+
+.restart-btn{margin-top:2.2rem;padding:.75rem 1.8rem;background:transparent;border:1px solid rgba(196,164,90,.32);color:#C4A45A;font-family:'Raleway',sans-serif;font-size:.66rem;letter-spacing:.17em;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:all .25s;display:inline-block;}
+.restart-btn:hover{background:#C4A45A;color:#050D1A;}
+
+/* ── LOADING ── */
+#loading-overlay{display:none;position:fixed;inset:0;background:rgba(5,13,26,.93);z-index:200;align-items:center;justify-content:center;flex-direction:column;gap:1.4rem;}
 #loading-overlay.show{display:flex;}
-.ring{
-  width:44px;height:44px;
-  border:2px solid rgba(196,164,90,.12);
-  border-top-color:var(--gold);border-radius:50%;
-  animation:spin 1s linear infinite;
-}
-.loading-lbl{font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);}
+.ring{width:42px;height:42px;border:2px solid rgba(196,164,90,.1);border-top-color:#C4A45A;border-radius:50%;animation:spin 1s linear infinite;}
+.loading-lbl{font-size:.63rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.38);}
 
 /* ── ANIMATIONS ── */
-@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
 @keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-4px);opacity:1}}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.3}}
-@keyframes revealUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes revealUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 .reveal{opacity:0;}
-.reveal.visible{animation:revealUp .45s ease forwards;}
+.reveal.visible{animation:revealUp .42s ease forwards;}
 
-@media(max-width:600px){
+@media(max-width:700px){
+  .grammar-panel{display:none;}
   .cases-grid,.cases-hero,.feedback-body{padding-left:1.2rem;padding-right:1.2rem;}
   .header,.consult-header{padding-left:1rem;padding-right:1rem;}
-  .chat-area,.input-area{padding-left:1rem;padding-right:1rem;}
-  .score-grid{grid-template-columns:1fr;}
 }
-
-/* ── NAME SCREEN ── */
-#screen-name{
-  min-height:100vh;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  padding:2rem;
-}
-.name-card{
-  background:linear-gradient(145deg,#0F2645,#0B1D3A);
-  border:1px solid rgba(196,164,90,.22);
-  border-radius:6px;padding:3rem 2.5rem;
-  max-width:440px;width:100%;text-align:center;
-}
-.name-card .brand{
-  display:block;margin-bottom:2rem;
-  font-family:'Cormorant Garamond',serif;
-  font-size:1.1rem;font-weight:300;
-  letter-spacing:.25em;color:#C4A45A;text-transform:uppercase;
-}
-.name-card h2{
-  font-family:'Cormorant Garamond',serif;
-  font-size:2rem;font-weight:300;margin-bottom:.4rem;
-}
-.name-card h2 em{font-style:italic;color:#C4A45A;}
-.name-card p{
-  font-size:.78rem;color:rgba(255,255,255,.45);
-  line-height:1.7;margin-bottom:2rem;font-weight:300;
-}
-#student-name-input{
-  width:100%;background:rgba(255,255,255,.05);
-  border:1px solid rgba(196,164,90,.3);border-radius:4px;
-  padding:.85rem 1rem;color:#e0ddd8;
-  font-family:'Raleway',sans-serif;font-size:.9rem;
-  outline:none;transition:border-color .2s;
-  text-align:center;letter-spacing:.03em;
-  margin-bottom:1.2rem;
-}
-#student-name-input:focus{border-color:rgba(196,164,90,.65);}
-#student-name-input::placeholder{color:rgba(255,255,255,.2);font-style:italic;}
-.name-enter-btn{
-  width:100%;padding:.85rem;background:transparent;
-  border:1px solid rgba(196,164,90,.45);color:#C4A45A;
-  font-family:'Raleway',sans-serif;font-size:.7rem;
-  letter-spacing:.2em;text-transform:uppercase;
-  cursor:pointer;border-radius:4px;transition:all .25s;
-}
-.name-enter-btn:hover{background:#C4A45A;color:#050D1A;}
-.name-divider{width:2rem;height:1px;background:#C4A45A;opacity:.5;margin:1.2rem auto;}
 </style>
 </head>
 <body>
 
-<!-- ══════════ NAME ENTRY ══════════ -->
+<!-- ══════════ NAME ══════════ -->
 <div id="screen-name" class="screen active">
-  <div class="name-card">
-    <span class="brand">MD <em>Talk</em></span>
-    <h2>Welcome to the<br><em>Simulation Lab</em></h2>
-    <div class="name-divider"></div>
-    <p>Before you begin, please enter your name so your feedback can be personalised.</p>
-    <input id="student-name-input" type="text" placeholder="Your full name..." autocomplete="off" />
-    <button class="name-enter-btn" onclick="enterLab()">Enter the Lab →</button>
+  <header class="header">
+    <div class="brand">MD <em>Talk</em></div>
+    <div class="header-badge">Virtual Patient Simulator</div>
+  </header>
+  <div id="screen-name-body" style="min-height:calc(100vh - 56px);display:flex;align-items:center;justify-content:center;padding:2rem;">
+    <div class="name-card">
+      <span class="name-card-brand">MD <em style="font-style:italic">Talk</em></span>
+      <h2>Welcome to the<br><em>Simulation Lab</em></h2>
+      <div class="name-divider"></div>
+      <p>Before you begin, please enter your name so your feedback can be personalised.</p>
+      <input id="student-name-input" type="text" placeholder="Your full name..." autocomplete="off" />
+      <button class="name-enter-btn" onclick="enterLab()">Enter the Lab →</button>
+    </div>
   </div>
 </div>
 
@@ -356,43 +287,64 @@ body{
 <div id="screen-cases" class="screen">
   <header class="header">
     <div class="brand">MD <em>Talk</em></div>
-    <div class="header-badge">Virtual Patient Simulator</div>
+    <div class="header-badge" id="student-badge">Virtual Patient Simulator</div>
   </header>
   <div class="cases-hero">
     <span class="overline">Clinical Simulation Lab</span>
     <h1>Choose your <em>patient</em></h1>
     <div class="divider"></div>
-    <p>Select a case and conduct the consultation in English — as you would in a real clinical encounter. You'll receive detailed feedback at the end.</p>
+    <p>Select a case and conduct the consultation in English. You'll receive real-time grammar feedback and a full evaluation at the end.</p>
   </div>
-  <div class="cases-grid" id="cases-grid"></div>
+  <div class="section-label" id="section-grammar-label" style="display:none;">◆ Grammar Focus Cases</div>
+  <div class="cases-grid" id="cases-grid-grammar" style="display:none;padding-bottom:.5rem;"></div>
+  <div class="section-label" style="margin-top:.3rem;">Clinical Cases</div>
+  <div class="cases-grid" id="cases-grid-main"></div>
 </div>
 
 <!-- ══════════ CONSULTATION ══════════ -->
 <div id="screen-consultation">
-  <header class="consult-header">
-    <button class="back-btn" onclick="goBack()">← Cases</button>
-    <div class="patient-avatar" id="c-avatar">?</div>
-    <div style="flex:1;min-width:0;">
-      <div class="patient-name-bar" id="c-name">—</div>
-      <div class="patient-sub-bar" id="c-sub">—</div>
-    </div>
-    <div class="status-dot"></div>
-    <button class="end-btn" onclick="endSession()">End Session</button>
-  </header>
-  <div class="chat-area" id="chat-area">
-    <div class="typing" id="typing">
-      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+  <!-- Main chat -->
+  <div class="consult-main">
+    <header class="consult-header">
+      <button class="back-btn" onclick="goBack()">← Cases</button>
+      <div class="patient-avatar" id="c-avatar">?</div>
+      <div style="flex:1;min-width:0;">
+        <div class="patient-name-bar" id="c-name">—</div>
+        <div class="patient-sub-bar" id="c-sub">—</div>
+      </div>
+      <div class="status-dot"></div>
+      <button class="end-btn" onclick="endSession()">End Session</button>
+    </header>
+    <div class="chat-area" id="chat-area"></div>
+    <div class="input-area">
+      <div class="input-hint">You are the doctor · speak in English · Enter to send</div>
+      <div class="input-row">
+        <input id="msg-input" type="text" placeholder="Type your question or statement..." autocomplete="off" />
+        <button class="send-btn" id="send-btn" onclick="sendMsg()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+        </button>
+      </div>
     </div>
   </div>
-  <div class="input-area">
-    <div class="input-hint">You are the doctor — speak to your patient in English · Enter to send</div>
-    <div class="input-row">
-      <input id="msg-input" type="text" placeholder="Type your question or statement..." autocomplete="off" />
-      <button class="send-btn" id="send-btn" onclick="sendMsg()">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
-        </svg>
-      </button>
+
+  <!-- Grammar Panel -->
+  <div class="grammar-panel" id="grammar-panel">
+    <div class="panel-header">
+      <div class="panel-title">Grammar <em>Monitor</em></div>
+      <div class="panel-sub">Real-time language feedback</div>
+      <div class="panel-stats">
+        <div class="stat-box"><div class="stat-num" id="stat-turns">0</div><div class="stat-lbl">Turns</div></div>
+        <div class="stat-box"><div class="stat-num" id="stat-errors">0</div><div class="stat-lbl">Errors</div></div>
+        <div class="stat-box"><div class="stat-num" id="stat-perfect">0</div><div class="stat-lbl">Perfect</div></div>
+      </div>
+    </div>
+    <div class="panel-body" id="panel-body">
+      <div class="panel-empty" id="panel-empty">
+        <div class="panel-empty-icon">✦</div>
+        <div>Your grammar feedback will appear here as you speak to the patient.</div>
+      </div>
     </div>
   </div>
 </div>
@@ -405,14 +357,28 @@ body{
   </header>
   <div class="feedback-body">
     <span class="overline">Consultation Complete</span>
-    <h1 style="font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:300;margin-bottom:.4rem;">
-      Session <em style="color:var(--gold);font-style:italic;">Feedback</em>
+    <h1 id="feedback-title" style="font-family:'Cormorant Garamond',serif;font-size:2.1rem;font-weight:300;margin-bottom:.4rem;">
+      Session <em style="color:#C4A45A;font-style:italic;">Feedback</em>
     </h1>
     <div class="divider"></div>
     <div class="score-grid">
       <div class="score-card"><div class="score-num" id="sc-eng">—</div><div class="score-lbl">English Performance</div></div>
       <div class="score-card"><div class="score-num" id="sc-clin">—</div><div class="score-lbl">Clinical Communication</div></div>
     </div>
+
+    <!-- Grammar tense usage summary (shown for grammar focus cases) -->
+    <div id="tense-summary-section" style="display:none;">
+      <div class="fb-section">
+        <h3>Verb Tense Usage</h3>
+        <div class="tenses-used-grid">
+          <div class="tense-summary-card"><div class="tense-count" id="ts-ps">0</div><div class="tense-name">Past Simple</div></div>
+          <div class="tense-summary-card"><div class="tense-count" id="ts-pp">0</div><div class="tense-name">Present Perfect</div></div>
+          <div class="tense-summary-card"><div class="tense-count" id="ts-ppc">0</div><div class="tense-name">Pres. Perfect Cont.</div></div>
+          <div class="tense-summary-card"><div class="tense-count" id="ts-prs">0</div><div class="tense-name">Present Simple</div></div>
+        </div>
+      </div>
+    </div>
+
     <div class="fb-section"><h3>English Language</h3><div id="fb-eng"></div></div>
     <div class="fb-section"><h3>Clinical Communication</h3><div id="fb-clin"></div></div>
     <div class="fb-section"><h3>Missed Opportunities</h3><div id="fb-miss"></div></div>
@@ -427,177 +393,205 @@ body{
 </div>
 
 <script>
-// ════════════════════════════════════════════════════
-// ⚠️  CONFIGURE: cole aqui a URL do seu Cloudflare Worker
-// ════════════════════════════════════════════════════
+// ════════════════════════════════════════
+// CONFIG — substitua pela URL do seu Worker
+// ════════════════════════════════════════
 const WORKER_URL = "https://jolly-silence-8b8a.mdtalk-office.workers.dev";
 
-// ════════════════════════════════════════════════════
+// ════════════════════════════════════════
 // CASE DATABASE
-// ════════════════════════════════════════════════════
+// ════════════════════════════════════════
 const CASES = [
+  // ── GRAMMAR FOCUS ──────────────────────────────
   {
-    id:"chest-pain", name:"Margaret Collins", age:62, gender:"female",
-    specialty:"Cardiology", level:1, levelLabel:"B2 · Intermediate",
+    id:"grammar-patient-history",
+    grammarFocus: true,
+    name:"Robert Hale",
+    age:58, gender:"male",
+    specialty:"Internal Medicine",
+    level:2, levelLabel:"Grammar Focus",
+    complaint:'"I haven\'t been feeling well for a while now."',
+    avatar:"RH",
+    grammarTargets: ["Present Simple","Present Perfect","Present Perfect Continuous","Past Simple"],
+    clinicalGoals:["chief complaint","symptom onset","duration and progression","past medical history","current medications","lifestyle factors","family history","associated symptoms","impact on daily life","patient concerns"],
+    persona:`You are Robert Hale, a 58-year-old accountant presenting to internal medicine.
+
+CLINICAL CONTEXT (reveal only when asked — never volunteer everything):
+- Chief complaint: fatigue, weight gain (~6kg over 8 months), feeling cold all the time, constipation
+- Onset: gradual, started about 8 months ago
+- Has been sleeping more than usual (10+ hours), still tired
+- Skin has become dry; hair falling out more than normal
+- No chest pain, no dyspnea
+- PMH: hypercholesterolaemia (on atorvastatin 20mg); no prior thyroid issues
+- Family history: mother had hypothyroidism; sister has type 2 diabetes
+- Social: married, works long hours, low physical activity, no smoking, 1–2 beers/week
+- No current complaints of depression, but mood has been "lower than usual"
+
+PERSONALITY:
+- Mild-mannered, slightly embarrassed about weight gain
+- Answers what is asked; does not volunteer extra information
+- Uses lay language ("I feel cold all the time", "my hair's been falling out")
+- Occasionally asks if things are related ("could this be from my cholesterol medication?")
+- Responds in 2–4 sentences naturally
+
+LANGUAGE: English only. 2–4 sentences. Realistic, conversational.`,
+    grammarHint:`This patient's history is ideal for practising:
+• Present Simple — "Where does it hurt? / How do you feel?"
+• Present Perfect — "Have you ever had this before? / How long have you had these symptoms?"
+• Present Perfect Continuous — "How long have you been feeling this way? / Have you been sleeping well?"
+• Past Simple — "When did it start? / Did anything change 8 months ago?"`
+  },
+
+  // ── CLINICAL CASES ─────────────────────────────
+  {
+    id:"chest-pain",
+    name:"Margaret Collins",
+    age:62, gender:"female",
+    specialty:"Cardiology",
+    level:1, levelLabel:"B2 · Intermediate",
     complaint:'"My chest has been hurting on and off for two days."',
     avatar:"MC",
     clinicalGoals:["onset and duration","character and severity","radiation","exacerbating factors","relieving factors","associated symptoms","past medical history","medications","family history","allergies"],
-    persona:`You are Margaret Collins, a 62-year-old retired schoolteacher from Ohio, currently a patient in a hospital outpatient clinic speaking with a doctor.
-
+    persona:`You are Margaret Collins, a 62-year-old retired schoolteacher from Ohio, a patient in a hospital outpatient clinic speaking with a doctor.
 CLINICAL CONTEXT (reveal gradually — only when asked):
-- Chief complaint: chest pain, intermittent, 2 days
-- Character: pressure-like, 6/10 at peak, radiates to left arm occasionally
+- Chest pain, intermittent, 2 days; pressure-like, 6/10, radiates to left arm occasionally
 - Worse with exertion (stairs), relieved by rest
-- Associated: mild dyspnea on exertion, one episode of diaphoresis yesterday
-- No nausea, no syncope
+- Mild dyspnea on exertion; one episode of diaphoresis yesterday; no nausea, no syncope
 - PMH: hypertension (lisinopril), type 2 diabetes (metformin)
-- Family history: father died of MI at 67
-- Social: widowed, lives alone, occasional wine, never smoked
+- Family history: father died of MI at 67; widowed, lives alone, occasional wine, never smoked
 - Allergies: penicillin (rash)
-
-PERSONALITY: Warm, cooperative, slightly anxious. Plain English — no medical vocabulary. Answers only what's asked. Uses hedging ("I think," "sort of"). 2–4 sentences per reply. If confused, asks politely.
-
-LANGUAGE: English only. 2–4 sentences max. Realistic and natural.`
+PERSONALITY: Warm, cooperative, slightly anxious. Plain English. Answers only what's asked. 2–4 sentences.
+LANGUAGE: English only. Realistic and natural.`
   },
   {
-    id:"headache", name:"Daniel Torres", age:34, gender:"male",
-    specialty:"Neurology", level:1, levelLabel:"B2 · Intermediate",
+    id:"headache",
+    name:"Daniel Torres",
+    age:34, gender:"male",
+    specialty:"Neurology",
+    level:1, levelLabel:"B2 · Intermediate",
     complaint:'"I\'ve been having terrible headaches for the past three weeks."',
     avatar:"DT",
     clinicalGoals:["location and quality","severity and duration","frequency","aura","associated symptoms","triggers","relieving factors","medications tried","family history","red flag screen"],
     persona:`You are Daniel Torres, a 34-year-old software engineer at a neurology outpatient clinic.
-
 CLINICAL CONTEXT:
-- Recurrent headaches 3 weeks; unilateral right, throbbing, 8/10
-- 4–6 hours each episode, 3–4x/week
+- Recurrent headaches 3 weeks; unilateral right, throbbing, 8/10; 4–6h each, 3–4x/week
 - Photophobia, phonophobia, mild nausea; visual aura (zigzag lines) in 2 episodes
 - Triggers: stress, poor sleep, skipping meals; partial relief with ibuprofen
-- PMH: none; one similar episode 2 years ago, self-resolved
-- 4 cups coffee/day, high-stress job; mother has migraines
-
-PERSONALITY: Analytical, direct, slightly impatient. Has Googled symptoms. Worried it's serious. Mentions work stress if natural.
-
+- PMH: none; one similar episode 2 years ago; 4 cups coffee/day; mother has migraines
+PERSONALITY: Analytical, direct, slightly impatient. Has Googled. Worried it's serious.
 LANGUAGE: English only. 2–4 sentences.`
   },
   {
-    id:"dyspnea", name:"Edward Whitman", age:71, gender:"male",
-    specialty:"Pulmonology", level:2, levelLabel:"C1 · Advanced",
+    id:"dyspnea",
+    name:"Edward Whitman",
+    age:71, gender:"male",
+    specialty:"Pulmonology",
+    level:2, levelLabel:"C1 · Advanced",
     complaint:'"I can\'t breathe properly. It\'s been getting worse slowly."',
     avatar:"EW",
     clinicalGoals:["dyspnea characterization","cough and sputum","smoking history","occupational exposure","exacerbation history","orthopnea/PND","red flags","medications","functional limitation","family history"],
     persona:`You are Edward Whitman, a 71-year-old retired construction worker at pulmonology.
-
 CLINICAL CONTEXT:
 - Progressive exertional dyspnea 18 months; breathless after one block
 - Chronic productive morning cough, whitish sputum; mild wheeze
-- No hemoptysis, no orthopnea, no chest pain
-- Two exacerbations requiring steroids last year
-- 45 pack-year smoking history, quit 5 years ago
-- Significant asbestos/dust exposure (construction, 30 years)
-- PMH: hypertension, GERD; meds: amlodipine, omeprazole
-- Brother had lung cancer
-
-PERSONALITY: Stoic, downplays symptoms ("just thought it was age"). Lay terms only. Slightly defensive about smoking. Opens up about occupational history if asked directly.
-
+- No hemoptysis, no orthopnea; two exacerbations requiring steroids last year
+- 45 pack-years, quit 5 years ago; significant asbestos/dust exposure (30 years)
+- PMH: hypertension, GERD; meds: amlodipine, omeprazole; brother had lung cancer
+PERSONALITY: Stoic, downplays symptoms. Lay terms only. Slightly defensive about smoking.
 LANGUAGE: English only. 2–4 sentences.`
   },
   {
-    id:"abdominal", name:"Priya Nair", age:28, gender:"female",
-    specialty:"Gastroenterology", level:2, levelLabel:"C1 · Advanced",
+    id:"abdominal",
+    name:"Priya Nair",
+    age:28, gender:"female",
+    specialty:"Gastroenterology",
+    level:2, levelLabel:"C1 · Advanced",
     complaint:'"I\'ve had stomach pain and diarrhea for months and I don\'t know what\'s wrong."',
     avatar:"PN",
     clinicalGoals:["pain characterization","bowel habit changes","rectal bleeding","weight loss","extraintestinal symptoms","dietary history","family history","menstrual history","medication review","psychosocial factors"],
     persona:`You are Priya Nair, a 28-year-old graduate student at gastroenterology.
-
 CLINICAL CONTEXT:
 - Crampy periumbilical/RLQ pain + diarrhea 8 months; 4–6 loose stools/day, mucus, blood twice
-- Unintentional weight loss ~5 kg; low-grade fever some days; fatigue; mouth sores x2
-- Right ankle arthritis (rheumatology: "non-specific")
-- Worse with stress, spicy/dairy food
-- Uncle has ulcerative colitis; on ferrous sulfate (iron deficiency anemia)
-- Vegetarian, non-smoker, occasional alcohol; periods regular
-
-PERSONALITY: Intelligent, articulate, has researched symptoms online. Mildly anxious. Initially embarrassed about bowel habits; opens up if asked gently. Mentions stress spontaneously.
-
+- ~5kg weight loss; low-grade fever some days; fatigue; mouth sores x2; right ankle arthritis
+- Uncle has ulcerative colitis; on ferrous sulfate; vegetarian, non-smoker; periods regular
+PERSONALITY: Articulate, has researched online. Mildly anxious. Initially embarrassed about bowel habits.
 LANGUAGE: English only. 2–4 sentences.`
   },
   {
-    id:"diabetes", name:"Carolyn Hughes", age:55, gender:"female",
-    specialty:"Endocrinology", level:3, levelLabel:"C2 · Proficient",
+    id:"diabetes",
+    name:"Carolyn Hughes",
+    age:55, gender:"female",
+    specialty:"Endocrinology",
+    level:3, levelLabel:"C2 · Proficient",
     complaint:'"My diabetes is out of control and I don\'t understand why."',
     avatar:"CH",
     clinicalGoals:["glycemic history","medication adherence","hypoglycemia screening","diet and exercise","complications screening","comorbidity review","family history","psychosocial factors","alcohol and lifestyle","patient concerns"],
     persona:`You are Carolyn Hughes, a 55-year-old accountant at endocrinology for poor glycemic control.
-
 CLINICAL CONTEXT:
-- HbA1c 10.2%; fasting glucose 180–240; postprandial spikes to 300+
-- Meds: metformin 1000mg BID + glipizide 10mg BID — forgets evening metformin; stopped glipizide 2 weeks (weight concerns: "my friend said it makes you fat")
-- High-carb lunches; stress eating; sedentary since knee OA started
-- Polyuria, mild fatigue; no hypoglycemia
-- PMH: hypertension, dyslipidemia, OA; microalbuminuria positive; eye exam 2 years ago
-- Mother: T2DM with renal failure; father: MI at 59
-- 1–2 glasses of wine nightly; divorced, high-stress job; allergy: sulfa
-
-PERSONALITY: Educated, articulate, somewhat defensive. Reveals non-adherence only if asked non-judgmentally. Worried about kidneys. Asks back occasionally. Mentions alcohol only if lifestyle explored in depth.
-
+- HbA1c 10.2%; fasting 180–240; postprandial 300+
+- Metformin 1000mg BID + glipizide 10mg BID; forgets evening dose; stopped glipizide 2wks
+- High-carb lunches; stress eating; sedentary (knee OA); polyuria; no hypoglycemia
+- PMH: hypertension, dyslipidemia, OA; microalbuminuria positive; eye exam 2yr ago
+- Mother: T2DM with renal failure; father: MI@59; 1–2 wines/night; allergy: sulfa
+PERSONALITY: Educated, defensive. Reveals non-adherence only if asked non-judgmentally. Worried about kidneys.
 LANGUAGE: English only. 2–4 sentences.`
   }
 ];
 
-
-// ════════════════════════════════════════════════════
-// STUDENT NAME
-// ════════════════════════════════════════════════════
-let studentName = "";
-
-function enterLab() {
-  const input = document.getElementById("student-name-input");
-  const name = input.value.trim();
-  if (!name) { input.focus(); input.style.borderColor = "rgba(224,112,112,.6)"; return; }
-  studentName = name;
-  showScreen("screen-cases");
-  renderCases();
-}
-
-// ════════════════════════════════════════════════════
+// ════════════════════════════════════════
 // STATE
-// ════════════════════════════════════════════════════
+// ════════════════════════════════════════
+let studentName = "";
 let activeCase = null;
-let chatHistory = []; // Anthropic format
+let chatHistory = [];
 let doctorTurns = [];
+let grammarLog = [];
+let stats = { turns: 0, errors: 0, perfect: 0 };
+let tenseCounts = { ps: 0, pp: 0, ppc: 0, prs: 0 };
 
-// ════════════════════════════════════════════════════
-// API CALL (via Cloudflare Worker)
-// ════════════════════════════════════════════════════
-async function callAPI(systemPrompt, messages) {
+// ════════════════════════════════════════
+// API
+// ════════════════════════════════════════
+async function callAPI(system, messages) {
   const res = await fetch(WORKER_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ system: systemPrompt, messages })
+    body: JSON.stringify({ system, messages })
   });
-  if (!res.ok) throw new Error(`Worker error: ${res.status}`);
+  if (!res.ok) throw new Error(`Worker ${res.status}`);
   const data = await res.json();
   return data.content?.[0]?.text ?? "";
 }
 
-// ════════════════════════════════════════════════════
-// SCREEN NAVIGATION
-// ════════════════════════════════════════════════════
+// ════════════════════════════════════════
+// SCREENS
+// ════════════════════════════════════════
 function showScreen(id) {
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-  const consultation = document.getElementById("screen-consultation");
-  consultation.style.display = "none";
-
+  const consult = document.getElementById("screen-consultation");
+  consult.style.display = "none";
   if (id === "screen-consultation") {
-    consultation.style.display = "flex";
+    consult.style.display = "flex";
   } else {
     document.getElementById(id).classList.add("active");
   }
   window.scrollTo(0,0);
 }
 
+function enterLab() {
+  const input = document.getElementById("student-name-input");
+  const name = input.value.trim();
+  if (!name) { input.focus(); input.style.borderColor = "rgba(224,112,112,.6)"; return; }
+  studentName = name;
+  document.getElementById("student-badge").textContent = name;
+  showScreen("screen-cases");
+  renderCases();
+}
+
 function showCases() {
   activeCase = null; chatHistory = []; doctorTurns = [];
+  grammarLog = []; stats = {turns:0,errors:0,perfect:0};
+  tenseCounts = {ps:0,pp:0,ppc:0,prs:0};
   showScreen("screen-cases");
   renderCases();
 }
@@ -607,13 +601,41 @@ function goBack() {
   showCases();
 }
 
-// ════════════════════════════════════════════════════
+// ════════════════════════════════════════
 // RENDER CASES
-// ════════════════════════════════════════════════════
+// ════════════════════════════════════════
 function renderCases() {
-  const grid = document.getElementById("cases-grid");
-  grid.innerHTML = CASES.map(c => `
-    <div class="case-card reveal" onclick="startCase('${c.id}')">
+  const grammarCases = CASES.filter(c => c.grammarFocus);
+  const mainCases = CASES.filter(c => !c.grammarFocus);
+
+  const gLabel = document.getElementById("section-grammar-label");
+  const gGrid = document.getElementById("cases-grid-grammar");
+
+  if (grammarCases.length > 0) {
+    gLabel.style.display = "block";
+    gGrid.style.display = "grid";
+    gGrid.innerHTML = grammarCases.map(c => caseCardHTML(c)).join("");
+  }
+
+  document.getElementById("cases-grid-main").innerHTML = mainCases.map(c => caseCardHTML(c)).join("");
+
+  setTimeout(() => {
+    document.querySelectorAll(".reveal").forEach((el,i) =>
+      setTimeout(() => el.classList.add("visible"), i * 60)
+    );
+  }, 60);
+}
+
+function caseCardHTML(c) {
+  const badgeHTML = c.grammarFocus
+    ? `<div class="grammar-badge">Grammar Focus</div>`
+    : "";
+  const tensesHTML = c.grammarFocus
+    ? `<span class="tag tag-grammar">4 Tenses</span>`
+    : "";
+  return `
+    <div class="case-card reveal ${c.grammarFocus ? 'grammar-focus' : ''}" onclick="startCase('${c.id}')">
+      ${badgeHTML}
       <div class="case-specialty">${c.specialty}</div>
       <div class="case-name">${c.name}</div>
       <div class="case-age">${c.age} years old · ${c.gender}</div>
@@ -621,83 +643,90 @@ function renderCases() {
       <div class="case-meta">
         <span class="tag tag-${c.level}">${c.levelLabel}</span>
         <span class="tag tag-sp">${c.specialty}</span>
+        ${tensesHTML}
       </div>
       <button class="case-btn">Begin Consultation →</button>
-    </div>
-  `).join("");
-  setTimeout(() => {
-    document.querySelectorAll(".reveal").forEach((el,i) =>
-      setTimeout(() => el.classList.add("visible"), i * 70)
-    );
-  }, 80);
+    </div>`;
 }
 
-// ════════════════════════════════════════════════════
+// ════════════════════════════════════════
 // START CASE
-// ════════════════════════════════════════════════════
+// ════════════════════════════════════════
 async function startCase(id) {
   activeCase = CASES.find(c => c.id === id);
   chatHistory = []; doctorTurns = [];
+  grammarLog = []; stats = {turns:0,errors:0,perfect:0};
+  tenseCounts = {ps:0,pp:0,ppc:0,prs:0};
 
   document.getElementById("c-avatar").textContent = activeCase.avatar;
   document.getElementById("c-name").textContent = activeCase.name;
   document.getElementById("c-sub").textContent = `${activeCase.age}y · ${activeCase.specialty} · ${activeCase.levelLabel}`;
 
-  const chat = document.getElementById("chat-area");
-  chat.innerHTML = `<div class="typing show" id="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
+  // Reset panel
+  document.getElementById("panel-body").innerHTML = `<div class="panel-empty" id="panel-empty"><div class="panel-empty-icon">✦</div><div>Your grammar feedback will appear here as you speak to the patient.</div></div>`;
+  updateStats();
 
+  // Grammar hint for grammar focus cases
+  if (activeCase.grammarFocus) {
+    const hint = document.createElement("div");
+    hint.style.cssText = "margin-bottom:.8rem;padding:.75rem;background:rgba(196,164,90,.06);border:1px solid rgba(196,164,90,.18);border-radius:3px;font-size:.68rem;line-height:1.65;color:rgba(255,255,255,.5);";
+    hint.innerHTML = activeCase.grammarHint.replace(/\n/g,"<br>");
+    const pb = document.getElementById("panel-body");
+    pb.innerHTML = "";
+    pb.appendChild(hint);
+  }
+
+  document.getElementById("chat-area").innerHTML = "";
   showScreen("screen-consultation");
   addSysMsg(`Consultation started — ${activeCase.name}, ${activeCase.specialty}`);
 
-  const opening = "(The doctor has just entered the room. Greet them briefly and state your main complaint in 1–2 sentences only.)";
-  const initMsgs = [{ role:"user", content: opening }];
-
+  const initMsgs = [{ role:"user", content:"(The doctor has just entered the room. Greet them briefly and state your main complaint in 1–2 sentences only.)" }];
+  showTyping(true);
   setLoading(true, "Connecting to patient...");
   try {
     const reply = await callAPI(activeCase.persona, initMsgs);
     chatHistory = [...initMsgs, { role:"assistant", content: reply }];
-    hideTyping();
+    showTyping(false);
     addMsg("patient", reply);
   } catch {
-    hideTyping();
-    addSysMsg("Connection error. Check your Worker URL and try again.");
+    showTyping(false);
+    addSysMsg("Connection error. Check your Worker URL.");
   }
   setLoading(false);
   document.getElementById("msg-input").focus();
 }
 
-// ════════════════════════════════════════════════════
-// CHAT UTILITIES
-// ════════════════════════════════════════════════════
+// ════════════════════════════════════════
+// CHAT
+// ════════════════════════════════════════
 function addSysMsg(text) {
   const chat = document.getElementById("chat-area");
   const d = document.createElement("div");
   d.className = "msg sys";
   d.innerHTML = `<div class="bubble">${text}</div>`;
-  chat.appendChild(d);
-  chat.scrollTop = 9999;
+  chat.appendChild(d); chat.scrollTop = 9999;
 }
 
-function addMsg(role, text) {
+function addMsg(role, text, grammarNoteHTML) {
   const chat = document.getElementById("chat-area");
   const isDoc = role === "doctor";
   const d = document.createElement("div");
   d.className = `msg ${role}`;
   d.innerHTML = `
     <div class="msg-av">${isDoc ? "Dr" : activeCase.avatar}</div>
-    <div>
+    <div style="min-width:0;flex:1;">
       <div class="msg-lbl">${isDoc ? "You (Doctor)" : activeCase.name}</div>
       <div class="bubble">${text}</div>
+      ${grammarNoteHTML ? grammarNoteHTML : ""}
     </div>`;
-  chat.appendChild(d);
-  chat.scrollTop = 9999;
+  chat.appendChild(d); chat.scrollTop = 9999;
 }
 
-function showTypingIndicator(show) {
-  let t = document.getElementById("typing");
+function showTyping(show) {
+  let t = document.getElementById("typing-el");
   if (!t) {
     t = document.createElement("div");
-    t.id = "typing";
+    t.id = "typing-el";
     t.className = "typing";
     t.innerHTML = "<div class='dot'></div><div class='dot'></div><div class='dot'></div>";
     document.getElementById("chat-area").appendChild(t);
@@ -706,8 +735,6 @@ function showTypingIndicator(show) {
   if (show) document.getElementById("chat-area").scrollTop = 9999;
 }
 
-function hideTyping() { showTypingIndicator(false); }
-
 function setLoading(on, label="") {
   const ov = document.getElementById("loading-overlay");
   if (label) document.getElementById("loading-lbl").textContent = label;
@@ -715,43 +742,161 @@ function setLoading(on, label="") {
   document.getElementById("send-btn").disabled = on;
 }
 
-// ════════════════════════════════════════════════════
+function updateStats() {
+  document.getElementById("stat-turns").textContent = stats.turns;
+  document.getElementById("stat-errors").textContent = stats.errors;
+  document.getElementById("stat-perfect").textContent = stats.perfect;
+}
+
+// ════════════════════════════════════════
+// GRAMMAR ANALYSIS
+// ════════════════════════════════════════
+const GRAMMAR_SYSTEM = `You are a Medical English grammar coach. Analyse a doctor's message in the context of a clinical consultation.
+
+Return ONLY valid JSON (no markdown, no backticks):
+{
+  "has_errors": true/false,
+  "corrected": "the corrected version of the sentence (same if perfect)",
+  "errors": ["brief description of error 1", ...],
+  "comment": "one short encouraging teaching comment (max 20 words)",
+  "tenses_used": {
+    "present_simple": true/false,
+    "present_perfect": true/false,
+    "present_perfect_continuous": true/false,
+    "past_simple": true/false
+  }
+}
+
+If the message is grammatically perfect, set has_errors to false, errors to [], and give a positive comment. Focus on grammar, word choice, and register appropriate for a clinical consultation.`;
+
+async function analyseGrammar(doctorMsg, turnNum) {
+  const raw = await callAPI(GRAMMAR_SYSTEM, [{
+    role: "user",
+    content: `Doctor's message (turn ${turnNum}): "${doctorMsg}"`
+  }]);
+  return JSON.parse(raw.replace(/```json|```/g,"").trim());
+}
+
+function buildGrammarNote(analysis) {
+  if (!analysis) return "";
+  if (!analysis.has_errors) {
+    return `<div class="grammar-note perfect"><span style="color:#4CAF7D;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;">✓ Perfect</span></div>`;
+  }
+  return `<div class="grammar-note has-errors">
+    <div class="grammar-note-label">Grammar note</div>
+    <div style="color:#E8D9B0;font-size:.72rem;">${analysis.corrected}</div>
+    <div style="margin-top:.25rem;font-size:.67rem;color:rgba(255,255,255,.42);">${analysis.comment}</div>
+  </div>`;
+}
+
+function addToPanelLog(doctorMsg, analysis, turnNum) {
+  const pb = document.getElementById("panel-body");
+  const empty = document.getElementById("panel-empty");
+  if (empty) empty.remove();
+
+  const hasTenses = analysis?.tenses_used;
+  const tensesHTML = hasTenses ? `
+    <div class="correction-tenses">
+      ${analysis.tenses_used.present_simple ? '<span class="tense-tag used">Pres. Simple</span>' : ''}
+      ${analysis.tenses_used.present_perfect ? '<span class="tense-tag used">Pres. Perfect</span>' : ''}
+      ${analysis.tenses_used.present_perfect_continuous ? '<span class="tense-tag used">Pres. Perf. Cont.</span>' : ''}
+      ${analysis.tenses_used.past_simple ? '<span class="tense-tag used">Past Simple</span>' : ''}
+    </div>` : "";
+
+  const entry = document.createElement("div");
+  entry.className = `correction-entry ${!analysis?.has_errors ? 'perfect' : 'has-errors'}`;
+
+  if (!analysis?.has_errors) {
+    entry.innerHTML = `
+      <div class="correction-turn">Turn ${turnNum}</div>
+      <div class="correction-original">"${doctorMsg}"</div>
+      <div class="perfect-mark">✓ ${analysis?.comment || 'No errors found.'}</div>
+      ${tensesHTML}`;
+  } else {
+    const errorsHTML = (analysis.errors || []).map(e => `<div style="margin-bottom:.2rem;">• ${e}</div>`).join("");
+    entry.innerHTML = `
+      <div class="correction-turn">Turn ${turnNum}</div>
+      <div class="correction-original">"${doctorMsg}"</div>
+      <div class="correction-fixed">→ "${analysis.corrected}"</div>
+      <div class="correction-comment">${errorsHTML}</div>
+      <div style="margin-top:.3rem;font-size:.67rem;color:rgba(255,255,255,.38);">${analysis.comment}</div>
+      ${tensesHTML}`;
+  }
+  pb.insertBefore(entry, pb.firstChild);
+  // Count tenses
+  if (hasTenses) {
+    if (analysis.tenses_used.past_simple) tenseCounts.ps++;
+    if (analysis.tenses_used.present_perfect) tenseCounts.pp++;
+    if (analysis.tenses_used.present_perfect_continuous) tenseCounts.ppc++;
+    if (analysis.tenses_used.present_simple) tenseCounts.prs++;
+  }
+}
+
+// ════════════════════════════════════════
 // SEND MESSAGE
-// ════════════════════════════════════════════════════
+// ════════════════════════════════════════
 async function sendMsg() {
   const input = document.getElementById("msg-input");
   const text = input.value.trim();
   if (!text || !activeCase) return;
-
   input.value = "";
-  addMsg("doctor", text);
-  doctorTurns.push(text);
-
-  const newHistory = [...chatHistory, { role:"user", content: text }];
-  showTypingIndicator(true);
   document.getElementById("send-btn").disabled = true;
 
-  try {
-    const reply = await callAPI(activeCase.persona, newHistory);
-    chatHistory = [...newHistory, { role:"assistant", content: reply }];
-    hideTyping();
-    addMsg("patient", reply);
-  } catch {
-    hideTyping();
+  stats.turns++;
+  const turnNum = stats.turns;
+  doctorTurns.push(text);
+  const newHistory = [...chatHistory, { role:"user", content: text }];
+
+  // Show doctor message immediately (no grammar note yet)
+  addMsg("doctor", text);
+
+  showTyping(true);
+
+  // Fire both API calls in parallel
+  const [patientReply, grammarAnalysis] = await Promise.allSettled([
+    callAPI(activeCase.persona, newHistory),
+    analyseGrammar(text, turnNum)
+  ]);
+
+  showTyping(false);
+
+  // Patient reply
+  if (patientReply.status === "fulfilled") {
+    chatHistory = [...newHistory, { role:"assistant", content: patientReply.value }];
+    addMsg("patient", patientReply.value);
+  } else {
     addSysMsg("Connection error. Please try again.");
   }
+
+  // Grammar note — retroactively update doctor's message bubble
+  if (grammarAnalysis.status === "fulfilled") {
+    const analysis = grammarAnalysis.value;
+    if (analysis.has_errors) { stats.errors++; } else { stats.perfect++; }
+    updateStats();
+
+    // Find last doctor message and append grammar note
+    const doctorMsgs = document.querySelectorAll(".msg.doctor");
+    const lastDoctorMsg = doctorMsgs[doctorMsgs.length - 1];
+    if (lastDoctorMsg) {
+      const noteHTML = buildGrammarNote(analysis);
+      const noteEl = document.createElement("div");
+      noteEl.innerHTML = noteHTML;
+      lastDoctorMsg.querySelector("div").appendChild(noteEl.firstChild);
+    }
+    addToPanelLog(text, analysis, turnNum);
+    grammarLog.push({ turn: turnNum, text, analysis });
+  }
+
   document.getElementById("send-btn").disabled = false;
-  input.focus();
+  document.getElementById("chat-area").scrollTop = 9999;
+  document.getElementById("msg-input").focus();
 }
 
-// ════════════════════════════════════════════════════
+// ════════════════════════════════════════
 // END SESSION + FEEDBACK
-// ════════════════════════════════════════════════════
+// ════════════════════════════════════════
 async function endSession() {
-  if (doctorTurns.length < 2) {
-    alert("Please conduct at least a few exchanges before ending the session.");
-    return;
-  }
+  if (doctorTurns.length < 2) { alert("Please conduct at least a few exchanges before ending the session."); return; }
   if (!confirm("End the consultation and receive your feedback?")) return;
 
   setLoading(true, "Generating feedback...");
@@ -760,32 +905,37 @@ async function endSession() {
     .map(m => `${m.role === "user" ? "DOCTOR" : "PATIENT"}: ${m.content}`)
     .join("\n");
 
+  const grammarSummary = grammarLog.length > 0
+    ? `\n\nGRAMMAR LOG (${stats.turns} turns, ${stats.errors} with errors, ${stats.perfect} perfect):\n` +
+      grammarLog.map(g => `T${g.turn}: "${g.text}" ${g.analysis.has_errors ? '→ ' + g.analysis.corrected : '✓'}`).join("\n")
+    : "";
+
   const prompt = `You are a Medical English teaching expert evaluating a doctor's simulated clinical consultation in English.
 
+STUDENT: ${studentName}
 CASE: ${activeCase.name}, ${activeCase.age}y, ${activeCase.specialty}
 CLINICAL GOALS: ${activeCase.clinicalGoals.join(", ")}
+${activeCase.grammarFocus ? `GRAMMAR TARGETS: ${activeCase.grammarTargets.join(", ")}` : ""}
 
 TRANSCRIPT:
 ${transcript}
+${grammarSummary}
 
-Return ONLY valid JSON (no markdown, no backticks, no commentary):
+Return ONLY valid JSON (no markdown, no backticks):
 {
-  "english_score": <integer 0-100>,
-  "clinical_score": <integer 0-100>,
-  "english_good": ["specific strength 1", "specific strength 2"],
-  "english_improve": ["specific suggestion 1", "specific suggestion 2"],
-  "clinical_good": ["specific strength 1", "specific strength 2"],
-  "clinical_improve": ["specific suggestion 1", "specific suggestion 2"],
-  "missed_goals": ["goal not explored 1", "goal not explored 2"]
+  "english_score": <0-100>,
+  "clinical_score": <0-100>,
+  "english_good": ["specific strength", ...],
+  "english_improve": ["specific suggestion", ...],
+  "clinical_good": ["specific strength", ...],
+  "clinical_improve": ["specific suggestion", ...],
+  "missed_goals": ["goal not explored", ...]
 }
 
-Each item: 1–2 sentences, specific and actionable. missed_goals = clinical goals from the list NOT adequately explored.`;
+2–3 items per array. Specific, actionable, encouraging.`;
 
   try {
-    const raw = await callAPI(
-      "You return only valid JSON. No markdown fences. No preamble.",
-      [{ role:"user", content: prompt }]
-    );
+    const raw = await callAPI("You return only valid JSON. No markdown.", [{ role:"user", content: prompt }]);
     const fb = JSON.parse(raw.replace(/```json|```/g,"").trim());
     setLoading(false);
     renderFeedback(fb);
@@ -797,39 +947,43 @@ Each item: 1–2 sentences, specific and actionable. missed_goals = clinical goa
 }
 
 function renderFeedback(fb) {
-  // Add student name to feedback header if available
-  const nameEl = document.querySelector("#screen-feedback h1");
-  if (nameEl && studentName) {
-    nameEl.innerHTML = studentName + \'s <em style="color:var(--gold);font-style:italic;">Feedback</em>';
-  }
+  document.getElementById("feedback-title").innerHTML =
+    `${studentName}'s <em style="color:#C4A45A;font-style:italic;">Feedback</em>`;
   document.getElementById("sc-eng").textContent = fb.english_score ?? "—";
   document.getElementById("sc-clin").textContent = fb.clinical_score ?? "—";
 
-  const fbEng = document.getElementById("fb-eng");
-  fbEng.innerHTML =
-    (fb.english_good||[]).map(t => fbItem("good","✓",t)).join("") +
-    (fb.english_improve||[]).map(t => fbItem("improve","→",t)).join("");
+  // Tense summary for grammar cases
+  const tenseSection = document.getElementById("tense-summary-section");
+  if (activeCase?.grammarFocus) {
+    tenseSection.style.display = "block";
+    document.getElementById("ts-ps").textContent = tenseCounts.ps;
+    document.getElementById("ts-pp").textContent = tenseCounts.pp;
+    document.getElementById("ts-ppc").textContent = tenseCounts.ppc;
+    document.getElementById("ts-prs").textContent = tenseCounts.prs;
+  } else {
+    tenseSection.style.display = "none";
+  }
 
-  const fbClin = document.getElementById("fb-clin");
-  fbClin.innerHTML =
-    (fb.clinical_good||[]).map(t => fbItem("good","✓",t)).join("") +
-    (fb.clinical_improve||[]).map(t => fbItem("improve","→",t)).join("");
-
-  const fbMiss = document.getElementById("fb-miss");
-  fbMiss.innerHTML = (fb.missed_goals||[]).length > 0
-    ? fb.missed_goals.map(t => fbItem("miss","○",t)).join("")
-    : fbItem("good","✓","All major clinical areas were explored. Excellent work.");
+  document.getElementById("fb-eng").innerHTML =
+    (fb.english_good||[]).map(t=>fbItem("good","✓",t)).join("") +
+    (fb.english_improve||[]).map(t=>fbItem("improve","→",t)).join("");
+  document.getElementById("fb-clin").innerHTML =
+    (fb.clinical_good||[]).map(t=>fbItem("good","✓",t)).join("") +
+    (fb.clinical_improve||[]).map(t=>fbItem("improve","→",t)).join("");
+  document.getElementById("fb-miss").innerHTML =
+    (fb.missed_goals||[]).length > 0
+      ? fb.missed_goals.map(t=>fbItem("miss","○",t)).join("")
+      : fbItem("good","✓","All major clinical areas were explored. Excellent work.");
 }
 
 function fbItem(type, icon, text) {
   return `<div class="fb-item ${type}"><span class="fb-icon">${icon}</span><span>${text}</span></div>`;
 }
 
-// ════════════════════════════════════════════════════
+// ════════════════════════════════════════
 // INIT
-// ════════════════════════════════════════════════════
+// ════════════════════════════════════════
 document.addEventListener("DOMContentLoaded", () => {
-  renderCases();
   document.getElementById("student-name-input").addEventListener("keydown", e => {
     if (e.key === "Enter") enterLab();
   });
