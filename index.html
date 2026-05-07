@@ -197,9 +197,9 @@ body{
 .msg.doctor .msg-lbl{text-align:right;}
 
 .bubble{padding:.75rem 1rem;border-radius:4px;font-size:.81rem;line-height:1.7;}
-.msg.patient .bubble{background:var(--navy-mid);border:1px solid rgba(196,164,90,.1);color:rgba(255,255,255,.82);border-bottom-left-radius:0;}
-.msg.doctor .bubble{background:rgba(196,164,90,.09);border:1px solid rgba(196,164,90,.22);color:var(--gold-pale);border-bottom-right-radius:0;}
-.msg.sys .bubble{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);color:var(--muted);font-size:.7rem;text-align:center;font-style:italic;border-radius:4px;}
+.msg.patient .bubble{background:#0F2645;border:1px solid rgba(196,164,90,.1);color:#e0ddd8;border-bottom-left-radius:0;}
+.msg.doctor .bubble{background:rgba(196,164,90,.09);border:1px solid rgba(196,164,90,.22);color:#E8D9B0;border-bottom-right-radius:0;}
+.msg.sys .bubble{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);color:rgba(255,255,255,.5);font-size:.7rem;text-align:center;font-style:italic;border-radius:4px;}
 
 .typing{
   display:none;gap:.35rem;align-items:center;
@@ -288,12 +288,72 @@ body{
   .chat-area,.input-area{padding-left:1rem;padding-right:1rem;}
   .score-grid{grid-template-columns:1fr;}
 }
+
+/* ── NAME SCREEN ── */
+#screen-name{
+  min-height:100vh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:2rem;
+}
+.name-card{
+  background:linear-gradient(145deg,#0F2645,#0B1D3A);
+  border:1px solid rgba(196,164,90,.22);
+  border-radius:6px;padding:3rem 2.5rem;
+  max-width:440px;width:100%;text-align:center;
+}
+.name-card .brand{
+  display:block;margin-bottom:2rem;
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.1rem;font-weight:300;
+  letter-spacing:.25em;color:#C4A45A;text-transform:uppercase;
+}
+.name-card h2{
+  font-family:'Cormorant Garamond',serif;
+  font-size:2rem;font-weight:300;margin-bottom:.4rem;
+}
+.name-card h2 em{font-style:italic;color:#C4A45A;}
+.name-card p{
+  font-size:.78rem;color:rgba(255,255,255,.45);
+  line-height:1.7;margin-bottom:2rem;font-weight:300;
+}
+#student-name-input{
+  width:100%;background:rgba(255,255,255,.05);
+  border:1px solid rgba(196,164,90,.3);border-radius:4px;
+  padding:.85rem 1rem;color:#e0ddd8;
+  font-family:'Raleway',sans-serif;font-size:.9rem;
+  outline:none;transition:border-color .2s;
+  text-align:center;letter-spacing:.03em;
+  margin-bottom:1.2rem;
+}
+#student-name-input:focus{border-color:rgba(196,164,90,.65);}
+#student-name-input::placeholder{color:rgba(255,255,255,.2);font-style:italic;}
+.name-enter-btn{
+  width:100%;padding:.85rem;background:transparent;
+  border:1px solid rgba(196,164,90,.45);color:#C4A45A;
+  font-family:'Raleway',sans-serif;font-size:.7rem;
+  letter-spacing:.2em;text-transform:uppercase;
+  cursor:pointer;border-radius:4px;transition:all .25s;
+}
+.name-enter-btn:hover{background:#C4A45A;color:#050D1A;}
+.name-divider{width:2rem;height:1px;background:#C4A45A;opacity:.5;margin:1.2rem auto;}
 </style>
 </head>
 <body>
 
+<!-- ══════════ NAME ENTRY ══════════ -->
+<div id="screen-name" class="screen active">
+  <div class="name-card">
+    <span class="brand">MD <em>Talk</em></span>
+    <h2>Welcome to the<br><em>Simulation Lab</em></h2>
+    <div class="name-divider"></div>
+    <p>Before you begin, please enter your name so your feedback can be personalised.</p>
+    <input id="student-name-input" type="text" placeholder="Your full name..." autocomplete="off" />
+    <button class="name-enter-btn" onclick="enterLab()">Enter the Lab →</button>
+  </div>
+</div>
+
 <!-- ══════════ CASES ══════════ -->
-<div id="screen-cases" class="screen active">
+<div id="screen-cases" class="screen">
   <header class="header">
     <div class="brand">MD <em>Talk</em></div>
     <div class="header-badge">Virtual Patient Simulator</div>
@@ -483,6 +543,21 @@ PERSONALITY: Educated, articulate, somewhat defensive. Reveals non-adherence onl
 LANGUAGE: English only. 2–4 sentences.`
   }
 ];
+
+
+// ════════════════════════════════════════════════════
+// STUDENT NAME
+// ════════════════════════════════════════════════════
+let studentName = "";
+
+function enterLab() {
+  const input = document.getElementById("student-name-input");
+  const name = input.value.trim();
+  if (!name) { input.focus(); input.style.borderColor = "rgba(224,112,112,.6)"; return; }
+  studentName = name;
+  showScreen("screen-cases");
+  renderCases();
+}
 
 // ════════════════════════════════════════════════════
 // STATE
@@ -722,6 +797,11 @@ Each item: 1–2 sentences, specific and actionable. missed_goals = clinical goa
 }
 
 function renderFeedback(fb) {
+  // Add student name to feedback header if available
+  const nameEl = document.querySelector("#screen-feedback h1");
+  if (nameEl && studentName) {
+    nameEl.innerHTML = studentName + \'s <em style="color:var(--gold);font-style:italic;">Feedback</em>';
+  }
   document.getElementById("sc-eng").textContent = fb.english_score ?? "—";
   document.getElementById("sc-clin").textContent = fb.clinical_score ?? "—";
 
@@ -750,6 +830,9 @@ function fbItem(type, icon, text) {
 // ════════════════════════════════════════════════════
 document.addEventListener("DOMContentLoaded", () => {
   renderCases();
+  document.getElementById("student-name-input").addEventListener("keydown", e => {
+    if (e.key === "Enter") enterLab();
+  });
   document.getElementById("msg-input").addEventListener("keydown", e => {
     if (e.key === "Enter") { e.preventDefault(); sendMsg(); }
   });
