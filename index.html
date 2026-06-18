@@ -71,10 +71,7 @@ body{background:#050D1A;color:#e0ddd8;font-family:'Raleway',sans-serif;font-weig
 .case-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:2px;background:linear-gradient(90deg,transparent,#C4A45A,transparent);opacity:0;transition:opacity .3s;}
 .case-card:hover{border-color:rgba(196,164,90,.6);transform:translateY(-3px);box-shadow:0 12px 32px rgba(11,29,58,.14);}
 .case-card:hover::before{opacity:1;}
-.case-card.grammar-focus{border-color:rgba(196,164,90,.5);background:linear-gradient(145deg,#fffdf7,#fdf8ee);}
 
-.grammar-badge{display:inline-flex;align-items:center;gap:.35rem;font-size:.56rem;letter-spacing:.15em;text-transform:uppercase;background:rgba(196,164,90,.12);border:1px solid rgba(196,164,90,.5);color:#a8893a;padding:.22rem .65rem;border-radius:2px;margin-bottom:.7rem;}
-.grammar-badge::before{content:'◆';font-size:.5rem;}
 
 .case-specialty{font-size:.56rem;letter-spacing:.2em;text-transform:uppercase;color:#C4A45A;margin-bottom:.55rem;}
 .case-name{font-family:'Cormorant Garamond',serif;font-size:1.35rem;font-weight:400;margin-bottom:.2rem;color:#050D1A;}
@@ -86,7 +83,6 @@ body{background:#050D1A;color:#e0ddd8;font-family:'Raleway',sans-serif;font-weig
 .tag-2{border-color:rgba(196,164,90,.5);color:#a8893a;}
 .tag-3{border-color:rgba(200,80,80,.4);color:#c05050;}
 .tag-sp{border-color:rgba(11,29,58,.18);color:rgba(5,13,26,.65);}
-.tag-grammar{border-color:rgba(196,164,90,.6);color:#a8893a;background:rgba(196,164,90,.1);}
 .case-btn{width:100%;padding:.62rem;background:transparent;border:1px solid rgba(5,13,26,.35);color:#050D1A;font-family:'Raleway',sans-serif;font-size:.6rem;letter-spacing:.17em;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:all .2s;}
 .case-btn:hover{background:#0B1D3A;color:#fff;border-color:#050D1A;}
 
@@ -966,9 +962,9 @@ function goBack() {
 // RENDER CASES
 // ════════════════════════════════════════
 function renderCases() {
-  const oncoCases    = CASES.filter(c => !c.grammarFocus && c.specialty === "Oncology");
-  const neuroCases   = CASES.filter(c => !c.grammarFocus && c.specialty === "Neurology");
-  const mainCases    = CASES.filter(c => !c.grammarFocus && c.specialty !== "Oncology" && c.specialty !== "Neurology");
+  const oncoCases    = CASES.filter(c => c.specialty === "Oncology");
+  const neuroCases   = CASES.filter(c => c.specialty === "Neurology");
+  const mainCases    = CASES.filter(c => c.specialty !== "Oncology" && c.specialty !== "Neurology");
 
   const show = (labelId, gridId, cases) => {
     const label = document.getElementById(labelId);
@@ -992,15 +988,8 @@ function renderCases() {
 }
 
 function caseCardHTML(c) {
-  const badgeHTML = c.grammarFocus
-    ? `<div class="grammar-badge">Grammar Focus</div>`
-    : "";
-  const tensesHTML = c.grammarFocus
-    ? `<span class="tag tag-grammar">4 Tenses</span>`
-    : "";
   return `
-    <div class="case-card reveal ${c.grammarFocus ? 'grammar-focus' : ''}" onclick="startCase('${c.id}')">
-      ${badgeHTML}
+    <div class="case-card reveal" onclick="startCase('${c.id}')">
       <div class="case-specialty">${c.specialty}</div>
       <div class="case-name">${c.name}</div>
       <div class="case-age">${c.age} years old · ${c.gender}</div>
@@ -1008,7 +997,6 @@ function caseCardHTML(c) {
       <div class="case-meta">
         <span class="tag tag-${c.level}">${c.levelLabel}</span>
         <span class="tag tag-sp">${c.specialty}</span>
-        ${tensesHTML}
       </div>
       <button class="case-btn">Begin Consultation →</button>
     </div>`;
@@ -1030,16 +1018,6 @@ async function startCase(id) {
   // Reset panel
   document.getElementById("panel-body").innerHTML = `<div class="panel-empty" id="panel-empty"><div class="panel-empty-icon">✦</div><div>Your grammar feedback will appear here as you speak to the patient.</div></div>`;
   updateStats();
-
-  // Grammar hint for grammar focus cases
-  if (activeCase.grammarFocus) {
-    const hint = document.createElement("div");
-    hint.style.cssText = "margin-bottom:.8rem;padding:.75rem;background:rgba(196,164,90,.06);border:1px solid rgba(196,164,90,.18);border-radius:3px;font-size:.68rem;line-height:1.65;color:rgba(255,255,255,.5);";
-    hint.innerHTML = activeCase.grammarHint.replace(/\n/g,"<br>");
-    const pb = document.getElementById("panel-body");
-    pb.innerHTML = "";
-    pb.appendChild(hint);
-  }
 
   document.getElementById("chat-area").innerHTML = "";
   showScreen("screen-consultation");
@@ -1289,7 +1267,6 @@ async function endSession() {
 STUDENT: ${studentName}
 CASE: ${activeCase.name}, ${activeCase.age}y, ${activeCase.specialty}
 CLINICAL GOALS: ${activeCase.clinicalGoals.join(", ")}
-${activeCase.grammarFocus ? `GRAMMAR TARGETS: ${activeCase.grammarTargets.join(", ")}` : ""}
 
 TRANSCRIPT:
 ${transcript}
@@ -1326,17 +1303,7 @@ function renderFeedback(fb) {
   document.getElementById("sc-eng").textContent = fb.english_score ?? "—";
   document.getElementById("sc-clin").textContent = fb.clinical_score ?? "—";
 
-  // Tense summary for grammar cases
-  const tenseSection = document.getElementById("tense-summary-section");
-  if (activeCase?.grammarFocus) {
-    tenseSection.style.display = "block";
-    document.getElementById("ts-ps").textContent = tenseCounts.ps;
-    document.getElementById("ts-pp").textContent = tenseCounts.pp;
-    document.getElementById("ts-ppc").textContent = tenseCounts.ppc;
-    document.getElementById("ts-prs").textContent = tenseCounts.prs;
-  } else {
-    tenseSection.style.display = "none";
-  }
+  document.getElementById("tense-summary-section").style.display = "none";
 
   document.getElementById("fb-eng").innerHTML =
     (fb.english_good||[]).map(t=>fbItem("good","✓",t)).join("") +
