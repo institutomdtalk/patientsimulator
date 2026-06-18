@@ -1761,7 +1761,8 @@ const GRAMMAR_SYSTEM = `You are a strict Medical English examiner analysing a si
 
 Evaluate on TWO dimensions:
 
-1. GRAMMAR — tense accuracy, subject-verb agreement, articles, prepositions, word order, punctuation
+1. GRAMMAR — tense accuracy, subject-verb agreement, articles, prepositions, word order
+   NOTE: Do NOT flag capitalisation errors (e.g. lowercase sentence starts). These are irrelevant in a typed clinical consultation and must be completely ignored.
 2. DOCTOR-PATIENT REGISTER — Is the language appropriate, professional, and patient-friendly?
 
 Flag ALL of the following as errors:
