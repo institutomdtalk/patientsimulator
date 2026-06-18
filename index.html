@@ -105,7 +105,7 @@ body{background:#050D1A;color:#e0ddd8;font-family:'Raleway',sans-serif;font-weig
 .chat-area::-webkit-scrollbar-thumb{background:rgba(196,164,90,.3);border-radius:2px;}
 
 .msg{display:flex;gap:.7rem;max-width:65%;animation:fadeUp .3s ease;box-sizing:border-box;min-width:0;}
-.msg.doctor{align-self:flex-start;flex-direction:row;}
+.msg.doctor{align-self:flex-start;flex-direction:row;max-width:72%;}
 .msg.patient{align-self:flex-start;}
 .msg.sys{align-self:center;max-width:80%;}
 
@@ -1680,12 +1680,16 @@ function addMsg(role, text, grammarNoteHTML) {
   const isDoc = role === "doctor";
   const d = document.createElement("div");
   d.className = `msg ${role}`;
-  d.innerHTML = `
-    <div class="msg-av">${isDoc ? "Dr" : activeCase.avatar}</div>
+  d.innerHTML = isDoc ? `
     <div class="msg-inner">
-      <div class="msg-lbl">${isDoc ? "You (Doctor)" : activeCase.name}</div>
+      <div class="msg-lbl">You (Doctor)</div>
       <div class="bubble">${text}</div>
       ${grammarNoteHTML ? grammarNoteHTML : ""}
+    </div>` : `
+    <div class="msg-av">${activeCase.avatar}</div>
+    <div class="msg-inner">
+      <div class="msg-lbl">${activeCase.name}</div>
+      <div class="bubble">${text}</div>
     </div>`;
   chat.appendChild(d); chat.scrollTop = 9999;
 }
