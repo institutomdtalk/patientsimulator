@@ -106,8 +106,8 @@ body{background:#050D1A;color:#e0ddd8;font-family:'Raleway',sans-serif;font-weig
 .chat-area::-webkit-scrollbar{width:3px;}
 .chat-area::-webkit-scrollbar-thumb{background:rgba(196,164,90,.3);border-radius:2px;}
 
-.msg{display:flex;gap:.7rem;max-width:58%;animation:fadeUp .3s ease;box-sizing:border-box;min-width:0;}
-.msg.doctor{align-self:flex-end;flex-direction:row-reverse;margin-right:.5rem;}
+.msg{display:flex;gap:.7rem;max-width:65%;animation:fadeUp .3s ease;box-sizing:border-box;min-width:0;}
+.msg.doctor{align-self:flex-start;flex-direction:row;}
 .msg.patient{align-self:flex-start;}
 .msg.sys{align-self:center;max-width:80%;}
 
@@ -118,11 +118,11 @@ body{background:#050D1A;color:#e0ddd8;font-family:'Raleway',sans-serif;font-weig
 .msg.doctor .msg-av{background:#0B1D3A;border:1px solid rgba(11,29,58,.2);color:#C4A45A;}
 
 .msg-lbl{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(11,29,58,.38);margin-bottom:.25rem;}
-.msg.doctor .msg-lbl{text-align:right;color:rgba(196,164,90,.7);}
+.msg.doctor .msg-lbl{text-align:left;color:rgba(196,164,90,.85);}
 
 .bubble{padding:.9rem 1.2rem;border-radius:6px;font-size:.92rem;line-height:1.75;word-break:break-word;overflow-wrap:break-word;display:block;width:100%;box-sizing:border-box;}
 .msg.patient .bubble{background:#fff;border:1px solid rgba(196,164,90,.25);color:#0B1D3A;border-bottom-left-radius:0;box-shadow:0 2px 8px rgba(11,29,58,.06);}
-.msg.doctor .bubble{background:#0B1D3A;border:1px solid rgba(11,29,58,.1);color:#E8D9B0;border-bottom-right-radius:0;box-shadow:0 2px 8px rgba(11,29,58,.12);}
+.msg.doctor .bubble{background:#0B1D3A;border:1px solid rgba(11,29,58,.1);color:#E8D9B0;border-bottom-left-radius:0;border-bottom-right-radius:6px;box-shadow:0 2px 8px rgba(11,29,58,.12);}
 .msg.sys .bubble{background:rgba(11,29,58,.05);border:1px solid rgba(196,164,90,.2);color:rgba(11,29,58,.5);font-size:.75rem;text-align:center;font-style:italic;border-radius:4px;}
 
 /* Grammar inline note under doctor messages */
@@ -136,6 +136,7 @@ body{background:#050D1A;color:#e0ddd8;font-family:'Raleway',sans-serif;font-weig
   color:rgba(11,29,58,.6);
   max-width:100%;
   animation:fadeUp .4s ease;
+  text-align:left;
 }
 .grammar-note.has-errors{border-left-color:rgba(180,60,60,.5);background:rgba(180,60,60,.06);color:rgba(11,29,58,.65);}
 .grammar-note.perfect{border-left-color:rgba(60,160,100,.5);background:rgba(60,160,100,.07);color:rgba(40,120,70,.9);}
