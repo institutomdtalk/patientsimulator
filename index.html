@@ -40,7 +40,22 @@ body{background:#050D1A;color:#e0ddd8;font-family:'Raleway',sans-serif;font-weig
 
 /* ── NAME SCREEN ── */
 #screen-name{min-height:100vh;display:flex;flex-direction:column;background:#050D1A;}
-#screen-cases{background:#0B1D3A;min-height:100vh;}
+#screen-cases{background:#0B1D3A;min-height:100vh;position:relative;}
+#screen-cases::before{
+  content:'MD';
+  position:fixed;
+  bottom:-8vh;
+  right:-2vw;
+  font-family:'Cormorant Garamond',serif;
+  font-size:38vw;
+  font-weight:300;
+  color:rgba(255,255,255,.028);
+  line-height:1;
+  pointer-events:none;
+  user-select:none;
+  z-index:0;
+  letter-spacing:-.02em;
+}
 .name-card{background:linear-gradient(145deg,#fdfaf5,#f5f0e8);border:1px solid rgba(196,164,90,.35);border-radius:6px;padding:3rem 2.5rem;max-width:440px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.35);}
 .name-card-brand{display:block;margin-bottom:1.8rem;font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:300;letter-spacing:.25em;color:#C4A45A;text-transform:uppercase;}
 .name-card h2{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;margin-bottom:.4rem;color:#050D1A;}
@@ -55,7 +70,7 @@ body{background:#050D1A;color:#e0ddd8;font-family:'Raleway',sans-serif;font-weig
 
 /* ── CASES SCREEN ── */
 #screen-cases.active{display:block;}
-.cases-hero{padding:5rem 3rem 1.2rem;width:100%;}
+.cases-hero{padding:5rem 3rem 1.2rem;width:100%;position:relative;z-index:1;}
 .overline{font-size:.68rem;letter-spacing:.25em;text-transform:uppercase;color:#C4A45A;display:block;margin-bottom:.8rem;}
 .cases-hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2.2rem,5vw,3.2rem);font-weight:300;line-height:1.15;margin-bottom:.2rem;color:#ffffff;}
 .cases-hero h1 em{font-style:italic;color:#C4A45A;}
@@ -64,9 +79,9 @@ body{background:#050D1A;color:#e0ddd8;font-family:'Raleway',sans-serif;font-weig
 .cases-hero p{font-size:.88rem;color:rgba(255,255,255,.55);line-height:1.8;max-width:560px;font-weight:300;}
 
 /* Section labels */
-.section-label{font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.35);padding:.5rem 3rem 0;width:100%;margin-top:2.5rem;}
+.section-label{font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.35);padding:.5rem 3rem 0;width:100%;margin-top:2.5rem;position:relative;z-index:1;}
 
-.cases-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.4rem;padding:0.6rem 3rem 4rem;width:100%;}
+.cases-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.4rem;padding:0.6rem 3rem 4rem;width:100%;position:relative;z-index:1;}
 
 .case-card{background:#fff;border:1px solid rgba(196,164,90,.25);border-radius:6px;padding:1.8rem;cursor:pointer;transition:transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .3s ease, border-color .3s ease;position:relative;overflow:hidden;box-shadow:0 2px 16px rgba(11,29,58,.08);transform:scale(1);}
 .case-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,#C4A45A,#D4BA7A,transparent);opacity:0;transition:opacity .35s ease;}
