@@ -105,7 +105,7 @@ body{background:#050D1A;color:#e0ddd8;font-family:'Raleway',sans-serif;font-weig
 .chat-area::-webkit-scrollbar-thumb{background:rgba(196,164,90,.3);border-radius:2px;}
 
 .msg{display:flex;gap:.7rem;max-width:65%;animation:fadeUp .3s ease;box-sizing:border-box;min-width:0;}
-.msg.doctor{align-self:flex-start;flex-direction:row;max-width:72%;}
+.msg.doctor{align-self:flex-end;flex-direction:row;max-width:65%;margin-right:1.5rem;}
 .msg.patient{align-self:flex-start;}
 .msg.sys{align-self:center;max-width:80%;}
 
@@ -116,11 +116,11 @@ body{background:#050D1A;color:#e0ddd8;font-family:'Raleway',sans-serif;font-weig
 .msg.doctor .msg-av{background:#0B1D3A;border:1px solid rgba(11,29,58,.2);color:#C4A45A;}
 
 .msg-lbl{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(11,29,58,.38);margin-bottom:.25rem;}
-.msg.doctor .msg-lbl{text-align:left;color:rgba(196,164,90,.85);}
+.msg.doctor .msg-lbl{text-align:right;color:rgba(196,164,90,.85);}
 
 .bubble{padding:.9rem 1.2rem;border-radius:6px;font-size:.92rem;line-height:1.75;word-break:break-word;overflow-wrap:break-word;display:block;width:100%;box-sizing:border-box;}
 .msg.patient .bubble{background:#fff;border:1px solid rgba(196,164,90,.25);color:#0B1D3A;border-bottom-left-radius:0;box-shadow:0 2px 8px rgba(11,29,58,.06);}
-.msg.doctor .bubble{background:#0B1D3A;border:1px solid rgba(11,29,58,.1);color:#E8D9B0;border-bottom-left-radius:0;border-bottom-right-radius:6px;box-shadow:0 2px 8px rgba(11,29,58,.12);}
+.msg.doctor .bubble{background:#0B1D3A;border:1px solid rgba(11,29,58,.1);color:#E8D9B0;border-bottom-right-radius:0;border-bottom-left-radius:6px;box-shadow:0 2px 8px rgba(11,29,58,.12);}
 .msg.sys .bubble{background:rgba(11,29,58,.05);border:1px solid rgba(196,164,90,.2);color:rgba(11,29,58,.5);font-size:.75rem;text-align:center;font-style:italic;border-radius:4px;}
 
 /* Grammar inline note under doctor messages */
@@ -198,6 +198,30 @@ body{background:#050D1A;color:#e0ddd8;font-family:'Raleway',sans-serif;font-weig
   color:rgba(255,255,255,.3);font-size:.82rem;line-height:1.7;
 }
 .panel-empty-icon{font-size:1.8rem;margin-bottom:.8rem;opacity:.3;}
+
+.panel-footer{
+  flex-shrink:0;
+  padding:1rem;
+  border-top:1px solid rgba(196,164,90,.15);
+  background:#0a1a30;
+}
+.panel-end-btn{
+  width:100%;
+  display:flex;align-items:center;justify-content:center;gap:.5rem;
+  padding:.85rem 1rem;
+  background:transparent;
+  border:1px solid rgba(196,164,90,.4);
+  color:#C4A45A;
+  font-family:'Raleway',sans-serif;
+  font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;
+  cursor:pointer;border-radius:3px;
+  transition:all .25s;
+}
+.panel-end-btn:hover{
+  background:#C4A45A;
+  color:#050D1A;
+}
+.panel-end-btn:hover svg{stroke:#050D1A;}
 
 .correction-entry{
   margin-bottom:1rem;
@@ -367,6 +391,12 @@ body{background:#050D1A;color:#e0ddd8;font-family:'Raleway',sans-serif;font-weig
         <div class="panel-empty-icon">✦</div>
         <div>Your grammar feedback will appear here as you speak to the patient.</div>
       </div>
+    </div>
+    <div class="panel-footer">
+      <button class="panel-end-btn" onclick="endSession()">
+        <span>Finalizar &amp; Gerar Relatório</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
     </div>
   </div>
 </div>
