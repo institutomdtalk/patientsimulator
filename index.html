@@ -106,19 +106,19 @@ body{background:#050D1A;color:#e0ddd8;font-family:'Raleway',sans-serif;font-weig
 .chat-area::-webkit-scrollbar{width:3px;}
 .chat-area::-webkit-scrollbar-thumb{background:rgba(196,164,90,.3);border-radius:2px;}
 
-.msg{display:flex;gap:.65rem;max-width:68%;animation:fadeUp .3s ease;}
-.msg.doctor{align-self:flex-end;flex-direction:row-reverse;max-width:68%;}
-.msg.patient{align-self:flex-start;max-width:68%;}
-.msg.sys{align-self:center;max-width:460px;}
+.msg{display:flex;gap:.65rem;width:68%;animation:fadeUp .3s ease;min-width:0;}
+.msg.doctor{align-self:flex-end;flex-direction:row-reverse;width:68%;}
+.msg.patient{align-self:flex-start;width:68%;}
+.msg.sys{align-self:center;width:auto;max-width:460px;}
 
-.msg-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;font-family:'Cormorant Garamond',serif;margin-top:.2rem;}
+.msg-av{width:32px;height:32px;min-width:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;font-family:'Cormorant Garamond',serif;margin-top:.2rem;}
 .msg.patient .msg-av{background:linear-gradient(135deg,#f0e8d5,#e8dcc5);border:1px solid rgba(196,164,90,.35);color:#8a6e30;}
 .msg.doctor .msg-av{background:#0B1D3A;border:1px solid rgba(11,29,58,.2);color:#C4A45A;}
 
 .msg-lbl{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(11,29,58,.38);margin-bottom:.25rem;}
 .msg.doctor .msg-lbl{text-align:right;color:rgba(196,164,90,.7);}
 
-.bubble{padding:.9rem 1.2rem;border-radius:6px;font-size:.92rem;line-height:1.75;word-wrap:break-word;overflow-wrap:break-word;min-width:0;}
+.bubble{padding:.9rem 1.2rem;border-radius:6px;font-size:.92rem;line-height:1.75;word-wrap:break-word;overflow-wrap:break-word;min-width:0;width:100%;}
 .msg.patient .bubble{background:#fff;border:1px solid rgba(196,164,90,.25);color:#0B1D3A;border-bottom-left-radius:0;box-shadow:0 2px 8px rgba(11,29,58,.06);}
 .msg.doctor .bubble{background:#0B1D3A;border:1px solid rgba(11,29,58,.1);color:#E8D9B0;border-bottom-right-radius:0;box-shadow:0 2px 8px rgba(11,29,58,.12);}
 .msg.sys .bubble{background:rgba(11,29,58,.05);border:1px solid rgba(196,164,90,.2);color:rgba(11,29,58,.5);font-size:.75rem;text-align:center;font-style:italic;border-radius:4px;}
