@@ -1070,6 +1070,7 @@ function renderCases() {
     }
   };
 
+  show("section-beginner-label", "cases-grid-beginner", beginnerCases);
   show("section-onco-label",    "cases-grid-onco",    oncoCases);
   show("section-neuro-label",   "cases-grid-neuro",   neuroCases);
   document.getElementById("cases-grid-main").innerHTML = mainCases.map(c => caseCardHTML(c)).join("");
