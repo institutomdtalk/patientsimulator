@@ -27,7 +27,7 @@ body{background:#050D1A;color:#e0ddd8;font-family:'Raleway',sans-serif;font-weig
 .header{padding:1.1rem 2rem;border-bottom:1px solid rgba(196,164,90,.18);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;background:rgba(5,13,26,.97);backdrop-filter:blur(8px);}
 .header.light{background:#ffffff;border-bottom:1px solid rgba(196,164,90,.2);}
 .header.light .brand{color:#C4A45A;}
-.header.light .header-badge{color:rgba(5,13,26,.6);border-color:rgba(196,164,90,.35);}
+.header.light .header-badge{color:#ffffff;border-color:rgba(196,164,90,.35);}
 .brand{font-family:'Cormorant Garamond',serif;font-size:.92rem;font-weight:300;letter-spacing:.25em;color:#C4A45A;text-transform:uppercase;}
 .brand em{font-style:italic;color:#D4BA7A;}
 .header-badge{font-size:.64rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.4);border:1px solid rgba(196,164,90,.22);padding:.25rem .7rem;border-radius:2px;}
@@ -57,7 +57,8 @@ body{background:#050D1A;color:#e0ddd8;font-family:'Raleway',sans-serif;font-weig
 #screen-cases.active{display:block;}
 .cases-hero{padding:3rem 3rem 1.2rem;width:100%;}
 .overline{font-size:.68rem;letter-spacing:.25em;text-transform:uppercase;color:#C4A45A;display:block;margin-bottom:.8rem;}
-.cases-hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2.2rem,5vw,3.2rem);font-weight:300;line-height:1.15;margin-bottom:.4rem;color:#ffffff;}
+.cases-hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2.2rem,5vw,3.2rem);font-weight:300;line-height:1.15;margin-bottom:.2rem;color:#ffffff;}
+.cases-hero h1 em{font-style:italic;color:#C4A45A;}
 .cases-hero h1 em{font-style:italic;color:#C4A45A;}
 .divider{width:2.5rem;height:1px;background:#C4A45A;opacity:.55;margin:1rem 0;}
 .cases-hero p{font-size:.88rem;color:rgba(255,255,255,.55);line-height:1.8;max-width:560px;font-weight:300;}
@@ -348,7 +349,8 @@ body{background:#050D1A;color:#e0ddd8;font-family:'Raleway',sans-serif;font-weig
   </header>
   <div class="cases-hero">
     <span class="overline">Clinical Simulation Lab</span>
-    <h1>Choose your <em>patient</em></h1>
+    <h1 class="greeting-title" id="greeting-title">Hello, <em>Dr. —</em></h1>
+    <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(1.4rem,3vw,2rem);font-weight:300;color:rgba(255,255,255,.55);margin-bottom:.4rem;">Choose your <em style="font-style:italic;color:#C4A45A;">patient</em></h2>
     <div class="divider"></div>
     <p>Select a case and conduct the consultation in English. You'll receive real-time grammar feedback and a full evaluation at the end.</p>
   </div>
@@ -1643,6 +1645,11 @@ function goBack() {
 // RENDER CASES
 // ════════════════════════════════════════
 function renderCases() {
+  // Update greeting with student name
+  const greetingEl = document.getElementById("greeting-title");
+  if (greetingEl && studentName) {
+    greetingEl.innerHTML = `Hello, <em>Dr. ${studentName}</em>`;
+  }
   const levelOrder = {"A2/B1 · Beginner": 0, "B2 · Intermediate": 1, "C1 · Advanced": 2, "C2 · Proficient": 3};
   const sortByLevel = arr => arr.slice().sort((a,b) => (levelOrder[a.levelLabel]??9) - (levelOrder[b.levelLabel]??9));
 
