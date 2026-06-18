@@ -99,6 +99,19 @@ body{background:#050D1A;color:#e0ddd8;font-family:'Raleway',sans-serif;font-weig
 .patient-name-bar{font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:#050D1A;font-weight:400;}
 .patient-sub-bar{font-size:.68rem;color:rgba(11,29,58,.45);letter-spacing:.03em;}
 .status-dot{width:6px;height:6px;border-radius:50%;background:#4CAF7D;box-shadow:0 0 5px rgba(76,175,125,.6);animation:pulse-dot 2s infinite;margin-left:auto;flex-shrink:0;}
+.doctor-badge{
+  font-family:'Raleway',sans-serif;
+  font-size:.72rem;
+  font-weight:500;
+  letter-spacing:.08em;
+  color:#ffffff;
+  background:rgba(11,29,58,.08);
+  border:1px solid rgba(196,164,90,.25);
+  padding:.35rem .9rem;
+  border-radius:3px;
+  white-space:nowrap;
+  flex-shrink:0;
+}
 .end-btn{background:none;border:1px solid rgba(180,60,60,.3);color:#c04040;padding:.4rem 1.1rem;font-family:'Raleway',sans-serif;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;border-radius:3px;transition:all .2s;white-space:nowrap;}
 .end-btn:hover{background:rgba(180,60,60,.08);border-color:rgba(180,60,60,.5);}
 
@@ -339,14 +352,14 @@ body{background:#050D1A;color:#e0ddd8;font-family:'Raleway',sans-serif;font-weig
     <div class="divider"></div>
     <p>Select a case and conduct the consultation in English. You'll receive real-time grammar feedback and a full evaluation at the end.</p>
   </div>
-  <div class="section-label" id="section-onco-label" style="display:none;">Oncology</div>
+  <div class="section-label" id="section-main-label" style="display:none;">General Practice &amp; Internal Medicine</div>
+  <div class="cases-grid" id="cases-grid-main" style="display:none;padding-bottom:.5rem;"></div>
+  <div class="section-label" id="section-onco-label" style="display:none;margin-top:.5rem;">Oncology</div>
   <div class="cases-grid" id="cases-grid-onco" style="display:none;padding-bottom:.5rem;"></div>
   <div class="section-label" id="section-neuro-label" style="display:none;margin-top:.5rem;">Neurology</div>
   <div class="cases-grid" id="cases-grid-neuro" style="display:none;padding-bottom:.5rem;"></div>
   <div class="section-label" id="section-cardio-label" style="display:none;margin-top:.5rem;">Cardiology</div>
-  <div class="cases-grid" id="cases-grid-cardio" style="display:none;padding-bottom:.5rem;"></div>
-  <div class="section-label" id="section-main-label" style="display:none;margin-top:.5rem;">General Practice &amp; Internal Medicine</div>
-  <div class="cases-grid" id="cases-grid-main" style="display:none;"></div>
+  <div class="cases-grid" id="cases-grid-cardio" style="display:none;"></div>
 </div>
 
 <!-- ══════════ CONSULTATION ══════════ -->
@@ -361,6 +374,7 @@ body{background:#050D1A;color:#e0ddd8;font-family:'Raleway',sans-serif;font-weig
         <div class="patient-sub-bar" id="c-sub">—</div>
       </div>
       <div class="status-dot"></div>
+      <div class="doctor-badge" id="doctor-badge">Dr. —</div>
       <button class="end-btn" onclick="endSession()">End Session</button>
     </header>
     <div class="chat-area" id="chat-area"></div>
@@ -1602,7 +1616,7 @@ function enterLab() {
     return;
   }
   studentName = name;
-  document.getElementById("student-badge").textContent = name;
+  document.getElementById("student-badge").textContent = "Dr. " + name;
   showCases();
 }
 
@@ -1647,10 +1661,10 @@ function renderCases() {
     }
   };
 
+  show("section-main-label",   "cases-grid-main",    mainCases);
   show("section-onco-label",   "cases-grid-onco",    oncoCases);
   show("section-neuro-label",  "cases-grid-neuro",   neuroCases);
   show("section-cardio-label", "cases-grid-cardio",  cardioCases);
-  show("section-main-label",   "cases-grid-main",    mainCases);
 
   setTimeout(() => {
     document.querySelectorAll(".reveal").forEach((el,i) =>
@@ -1687,6 +1701,7 @@ async function startCase(id) {
   document.getElementById("c-avatar").textContent = activeCase.avatar;
   document.getElementById("c-name").textContent = activeCase.name;
   document.getElementById("c-sub").textContent = `${activeCase.age}y · ${activeCase.specialty} · ${activeCase.levelLabel}`;
+  document.getElementById("doctor-badge").textContent = "Dr. " + studentName;
 
   // Reset panel
   document.getElementById("panel-body").innerHTML = `<div class="panel-empty" id="panel-empty"><div class="panel-empty-icon">✦</div><div>Your grammar feedback will appear here as you speak to the patient.</div></div>`;
