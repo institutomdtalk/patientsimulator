@@ -55,36 +55,36 @@ body{background:#050D1A;color:#e0ddd8;font-family:'Raleway',sans-serif;font-weig
 
 /* ── CASES SCREEN ── */
 #screen-cases.active{display:block;}
-.cases-hero{padding:3rem 2.5rem 1.2rem;max-width:960px;margin:0 auto;width:100%;}
+.cases-hero{padding:3rem 2rem 1.2rem;max-width:1280px;margin:0 auto;width:100%;}
 .overline{font-size:.6rem;letter-spacing:.25em;text-transform:uppercase;color:#C4A45A;display:block;margin-bottom:.8rem;}
 .cases-hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(1.9rem,5vw,3rem);font-weight:300;line-height:1.15;margin-bottom:.4rem;color:#050D1A;}
 .cases-hero h1 em{font-style:italic;color:#C4A45A;}
 .divider{width:2.5rem;height:1px;background:#C4A45A;opacity:.55;margin:1rem 0;}
-.cases-hero p{font-size:.79rem;color:rgba(5,13,26,.82);line-height:1.8;max-width:480px;font-weight:300;}
+.cases-hero p{font-size:.88rem;color:rgba(5,13,26,.82);line-height:1.8;max-width:560px;font-weight:300;}
 
 /* Section labels */
-.section-label{font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(5,13,26,.65);padding:.5rem 2.5rem 0;max-width:960px;margin:0 auto;width:100%;}
+.section-label{font-size:.64rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(5,13,26,.65);padding:.5rem 2rem 0;max-width:1280px;margin:0 auto;width:100%;}
 
-.cases-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:1.1rem;padding:0.6rem 2.5rem 4rem;max-width:960px;margin:0 auto;width:100%;}
+.cases-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.4rem;padding:0.6rem 2rem 4rem;max-width:1280px;margin:0 auto;width:100%;}
 
-.case-card{background:#fff;border:1px solid rgba(196,164,90,.3);border-radius:4px;padding:1.5rem;cursor:pointer;transition:border-color .25s,transform .25s,box-shadow .25s;position:relative;overflow:hidden;box-shadow:0 2px 12px rgba(11,29,58,.07);}
+.case-card{background:#fff;border:1px solid rgba(196,164,90,.3);border-radius:4px;padding:1.8rem;cursor:pointer;transition:border-color .25s,transform .25s,box-shadow .25s;position:relative;overflow:hidden;box-shadow:0 2px 12px rgba(11,29,58,.07);}
 .case-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:2px;background:linear-gradient(90deg,transparent,#C4A45A,transparent);opacity:0;transition:opacity .3s;}
 .case-card:hover{border-color:rgba(196,164,90,.6);transform:translateY(-3px);box-shadow:0 12px 32px rgba(11,29,58,.14);}
 .case-card:hover::before{opacity:1;}
 
 
-.case-specialty{font-size:.56rem;letter-spacing:.2em;text-transform:uppercase;color:#C4A45A;margin-bottom:.55rem;}
-.case-name{font-family:'Cormorant Garamond',serif;font-size:1.35rem;font-weight:400;margin-bottom:.2rem;color:#050D1A;}
-.case-age{font-size:.67rem;color:rgba(5,13,26,.65);margin-bottom:.9rem;}
-.case-complaint{font-size:.75rem;color:rgba(5,13,26,.82);line-height:1.6;font-style:italic;border-left:2px solid rgba(196,164,90,.4);padding-left:.65rem;margin-bottom:1.1rem;}
+.case-specialty{font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;color:#C4A45A;margin-bottom:.6rem;}
+.case-name{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:400;margin-bottom:.2rem;color:#050D1A;}
+.case-age{font-size:.78rem;color:rgba(5,13,26,.65);margin-bottom:.9rem;}
+.case-complaint{font-size:.86rem;color:rgba(5,13,26,.82);line-height:1.6;font-style:italic;border-left:2px solid rgba(196,164,90,.4);padding-left:.75rem;margin-bottom:1.1rem;}
 .case-meta{display:flex;gap:.45rem;flex-wrap:wrap;margin-bottom:.9rem;}
-.tag{font-size:.54rem;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .55rem;border-radius:2px;border:1px solid;}
+.tag{font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;padding:.25rem .65rem;border-radius:2px;border:1px solid;}
 .tag-0{border-color:rgba(100,149,237,.5);color:#4a7fd4;}
 .tag-1{border-color:rgba(76,175,125,.5);color:#3a9e6a;}
 .tag-2{border-color:rgba(196,164,90,.5);color:#a8893a;}
 .tag-3{border-color:rgba(200,80,80,.4);color:#c05050;}
 .tag-sp{border-color:rgba(11,29,58,.18);color:rgba(5,13,26,.65);}
-.case-btn{width:100%;padding:.62rem;background:transparent;border:1px solid rgba(5,13,26,.35);color:#050D1A;font-family:'Raleway',sans-serif;font-size:.6rem;letter-spacing:.17em;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:all .2s;}
+.case-btn{width:100%;padding:.7rem;background:transparent;border:1px solid rgba(5,13,26,.35);color:#050D1A;font-family:'Raleway',sans-serif;font-size:.68rem;letter-spacing:.17em;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:all .2s;}
 .case-btn:hover{background:#0B1D3A;color:#fff;border-color:#050D1A;}
 
 /* ── CONSULTATION SCREEN ── */
@@ -296,6 +296,8 @@ body{background:#050D1A;color:#e0ddd8;font-family:'Raleway',sans-serif;font-weig
     <div class="divider"></div>
     <p>Select a case and conduct the consultation in English. You'll receive real-time grammar feedback and a full evaluation at the end.</p>
   </div>
+  <div class="section-label" id="section-beginner-label" style="display:none;">A2 · Beginner</div>
+  <div class="cases-grid" id="cases-grid-beginner" style="display:none;padding-bottom:.5rem;"></div>
   <div class="section-label" id="section-onco-label" style="display:none;margin-top:.5rem;">Oncology</div>
   <div class="cases-grid" id="cases-grid-onco" style="display:none;padding-bottom:.5rem;"></div>
   <div class="section-label" id="section-neuro-label" style="display:none;margin-top:.5rem;">Neurology</div>
