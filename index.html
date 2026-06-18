@@ -313,14 +313,14 @@ body{background:#050D1A;color:#e0ddd8;font-family:'Raleway',sans-serif;font-weig
     <div class="divider"></div>
     <p>Select a case and conduct the consultation in English. You'll receive real-time grammar feedback and a full evaluation at the end.</p>
   </div>
-  <div class="section-label" id="section-beginner-label" style="display:none;">A2 · Beginner</div>
-  <div class="cases-grid" id="cases-grid-beginner" style="display:none;padding-bottom:.5rem;"></div>
-  <div class="section-label" id="section-onco-label" style="display:none;margin-top:.5rem;">Oncology</div>
+  <div class="section-label" id="section-onco-label" style="display:none;">Oncology</div>
   <div class="cases-grid" id="cases-grid-onco" style="display:none;padding-bottom:.5rem;"></div>
   <div class="section-label" id="section-neuro-label" style="display:none;margin-top:.5rem;">Neurology</div>
   <div class="cases-grid" id="cases-grid-neuro" style="display:none;padding-bottom:.5rem;"></div>
-  <div class="section-label" style="margin-top:.5rem;">General Practice &amp; Internal Medicine</div>
-  <div class="cases-grid" id="cases-grid-main"></div>
+  <div class="section-label" id="section-cardio-label" style="display:none;margin-top:.5rem;">Cardiology</div>
+  <div class="cases-grid" id="cases-grid-cardio" style="display:none;padding-bottom:.5rem;"></div>
+  <div class="section-label" id="section-main-label" style="display:none;margin-top:.5rem;">General Practice &amp; Internal Medicine</div>
+  <div class="cases-grid" id="cases-grid-main" style="display:none;"></div>
 </div>
 
 <!-- ══════════ CONSULTATION ══════════ -->
@@ -1597,10 +1597,13 @@ function goBack() {
 // RENDER CASES
 // ════════════════════════════════════════
 function renderCases() {
-  const beginnerCases = CASES.filter(c => c.levelLabel === "A2/B1 · Beginner");
-  const oncoCases    = CASES.filter(c => c.specialty === "Oncology" && c.levelLabel !== "A2/B1 · Beginner");
-  const neuroCases   = CASES.filter(c => c.specialty === "Neurology" && c.levelLabel !== "A2/B1 · Beginner");
-  const mainCases    = CASES.filter(c => c.specialty !== "Oncology" && c.specialty !== "Neurology" && c.levelLabel !== "A2/B1 · Beginner");
+  const levelOrder = {"A2/B1 · Beginner": 0, "B2 · Intermediate": 1, "C1 · Advanced": 2, "C2 · Proficient": 3};
+  const sortByLevel = arr => arr.slice().sort((a,b) => (levelOrder[a.levelLabel]??9) - (levelOrder[b.levelLabel]??9));
+
+  const oncoCases   = sortByLevel(CASES.filter(c => c.specialty === "Oncology"));
+  const neuroCases  = sortByLevel(CASES.filter(c => c.specialty === "Neurology"));
+  const cardioCases = sortByLevel(CASES.filter(c => c.specialty === "Cardiology"));
+  const mainCases   = sortByLevel(CASES.filter(c => !["Oncology","Neurology","Cardiology"].includes(c.specialty)));
 
   const show = (labelId, gridId, cases) => {
     const label = document.getElementById(labelId);
@@ -1612,10 +1615,10 @@ function renderCases() {
     }
   };
 
-  show("section-beginner-label", "cases-grid-beginner", beginnerCases);
-  show("section-onco-label",    "cases-grid-onco",    oncoCases);
-  show("section-neuro-label",   "cases-grid-neuro",   neuroCases);
-  document.getElementById("cases-grid-main").innerHTML = mainCases.map(c => caseCardHTML(c)).join("");
+  show("section-onco-label",   "cases-grid-onco",    oncoCases);
+  show("section-neuro-label",  "cases-grid-neuro",   neuroCases);
+  show("section-cardio-label", "cases-grid-cardio",  cardioCases);
+  show("section-main-label",   "cases-grid-main",    mainCases);
 
   setTimeout(() => {
     document.querySelectorAll(".reveal").forEach((el,i) =>
