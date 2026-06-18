@@ -79,6 +79,7 @@ body{background:#050D1A;color:#e0ddd8;font-family:'Raleway',sans-serif;font-weig
 .case-complaint{font-size:.75rem;color:rgba(5,13,26,.82);line-height:1.6;font-style:italic;border-left:2px solid rgba(196,164,90,.4);padding-left:.65rem;margin-bottom:1.1rem;}
 .case-meta{display:flex;gap:.45rem;flex-wrap:wrap;margin-bottom:.9rem;}
 .tag{font-size:.54rem;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .55rem;border-radius:2px;border:1px solid;}
+.tag-0{border-color:rgba(100,149,237,.5);color:#4a7fd4;}
 .tag-1{border-color:rgba(76,175,125,.5);color:#3a9e6a;}
 .tag-2{border-color:rgba(196,164,90,.5);color:#a8893a;}
 .tag-3{border-color:rgba(200,80,80,.4);color:#c05050;}
@@ -405,6 +406,96 @@ const WORKER_URL = "https://script.google.com/macros/s/AKfycbwBjPqa8PfgEWBXeR0V6
 // CASE DATABASE
 // ════════════════════════════════════════
 const CASES = [
+  // ══════════════════════════════════════════
+  // BEGINNER — A2/B1 · 3 cases
+  // ══════════════════════════════════════════
+  {
+    id:"beginner-onco",
+    name:"Tom Baker",
+    age:55, gender:"male",
+    specialty:"Oncology",
+    level:1, levelLabel:"A2/B1 · Beginner",
+    complaint:'"I have a lump here. It hurts sometimes."',
+    avatar:"TB",
+    clinicalGoals:["lump location","onset","pain character","size change","other symptoms","prior diagnosis","medications","family history","patient concerns","daily impact"],
+    persona:`You are Tom Baker, a 55-year-old builder presenting to oncology. You speak simply and slowly.
+CLINICAL CONTEXT (share only when asked — one piece at a time):
+- Right neck lump, noticed 6 weeks ago; firm, non-tender most of the time; occasional mild ache
+- Lump seems bigger than when first noticed
+- Mild fatigue; no weight loss; no fever; no night sweats
+- No prior cancer diagnosis; no medications; no allergies
+- Father had throat cancer; smokes 15 cigarettes/day (30 years); drinks 10 units/week
+- Works in construction; married; two adult children; scared but trying to stay calm
+
+PERSONALITY & LANGUAGE STYLE:
+- Speaks in very short, simple sentences
+- Uses basic vocabulary only: "hurt", "bad", "big", "tired", "scared"
+- Answers with 1–2 short sentences maximum
+- Does NOT use any medical terms
+- Occasionally says "I don't understand" if the doctor uses complex words
+- If the doctor uses jargon, respond: "Sorry, I don't know that word. Can you explain?"
+
+LANGUAGE: English only. Very simple. 1–2 sentences maximum. This patient has low health literacy.`
+  },
+  {
+    id:"beginner-neuro",
+    name:"Anna Kowalczyk",
+    age:42, gender:"female",
+    specialty:"Neurology",
+    level:1, levelLabel:"A2/B1 · Beginner",
+    complaint:'"My head hurts a lot. It started this morning."',
+    avatar:"AK",
+    clinicalGoals:["pain location","onset and duration","character","severity","associated symptoms","triggers","prior episodes","medications taken","visual symptoms","nausea and vomiting"],
+    persona:`You are Anna Kowalczyk, a 42-year-old supermarket cashier presenting to neurology. You speak slowly and simply.
+CLINICAL CONTEXT (reveal gradually, only when asked):
+- Severe headache, started suddenly this morning ("like something exploded in my head")
+- Worst headache of her life; 9/10; located at the back of the head and neck
+- Neck feels stiff; sensitive to light; feels sick; vomited once
+- No prior headaches like this; has had mild tension headaches before
+- Took two paracetamol tablets — no improvement
+- No fever at home; no vision changes she noticed; no weakness in arms or legs
+- Lives with husband and two children; no allergies; no regular medications
+- Very anxious and frightened
+
+PERSONALITY & LANGUAGE STYLE:
+- Speaks in short simple sentences
+- Uses basic words: "hurt", "bad", "stiff", "light hurts my eyes", "feel sick"
+- Answers 1–2 sentences; becomes tearful when pain is discussed
+- Says "I don't understand" if doctor uses medical words
+- If asked about "meningism" or "photophobia", she won't understand — needs plain language
+
+LANGUAGE: English only. Very simple. 1–2 short sentences. High anxiety.`
+  },
+  {
+    id:"beginner-cardio",
+    name:"Carlos Mendez",
+    age:60, gender:"male",
+    specialty:"Cardiology",
+    level:1, levelLabel:"A2/B1 · Beginner",
+    complaint:'"My chest hurts. I feel bad."',
+    avatar:"CM",
+    clinicalGoals:["pain character","location and radiation","onset","severity","exacerbating factors","relieving factors","associated symptoms","cardiac history","medications","risk factors"],
+    persona:`You are Carlos Mendez, a 60-year-old taxi driver in the emergency cardiology unit. You speak English as a second language — simply and slowly.
+CLINICAL CONTEXT (reveal only when asked):
+- Central chest pain, heavy and pressing, started 45 minutes ago at rest
+- Pain goes to left arm and jaw; 8/10 severity
+- Sweating a lot; feels dizzy; short of breath; nauseous
+- No relief with rest or position change
+- PMH: hypertension (takes "a blood pressure pill" — doesn't know name); high cholesterol (untreated)
+- Smokes 20 cigarettes/day; no exercise; overweight
+- Father had a heart attack at 62; brother has heart disease
+- Very frightened; keeps asking "Am I going to be okay?"
+
+PERSONALITY & LANGUAGE STYLE:
+- Speaks in very short sentences; limited vocabulary
+- Uses: "here" (points to chest), "bad", "heavy", "arm", "dizzy", "scared"
+- 1–2 sentences per answer
+- Repeats "Am I okay doctor?" if not reassured
+- Doesn't know medical terms — needs plain English
+
+LANGUAGE: English only. Very simple. 1–2 sentences. Frightened, needs reassurance.`
+  },
+
   // ══════════════════════════════════════════
   // ONCOLOGY — 5 cases
   // ══════════════════════════════════════════
@@ -962,9 +1053,10 @@ function goBack() {
 // RENDER CASES
 // ════════════════════════════════════════
 function renderCases() {
-  const oncoCases    = CASES.filter(c => c.specialty === "Oncology");
-  const neuroCases   = CASES.filter(c => c.specialty === "Neurology");
-  const mainCases    = CASES.filter(c => c.specialty !== "Oncology" && c.specialty !== "Neurology");
+  const beginnerCases = CASES.filter(c => c.levelLabel === "A2/B1 · Beginner");
+  const oncoCases    = CASES.filter(c => c.specialty === "Oncology" && c.levelLabel !== "A2/B1 · Beginner");
+  const neuroCases   = CASES.filter(c => c.specialty === "Neurology" && c.levelLabel !== "A2/B1 · Beginner");
+  const mainCases    = CASES.filter(c => c.specialty !== "Oncology" && c.specialty !== "Neurology" && c.levelLabel !== "A2/B1 · Beginner");
 
   const show = (labelId, gridId, cases) => {
     const label = document.getElementById(labelId);
@@ -988,6 +1080,7 @@ function renderCases() {
 }
 
 function caseCardHTML(c) {
+  const levelClass = c.levelLabel.startsWith("A2") ? "tag-0" : `tag-${c.level}`;
   return `
     <div class="case-card reveal" onclick="startCase('${c.id}')">
       <div class="case-specialty">${c.specialty}</div>
@@ -995,7 +1088,7 @@ function caseCardHTML(c) {
       <div class="case-age">${c.age} years old · ${c.gender}</div>
       <div class="case-complaint">${c.complaint}</div>
       <div class="case-meta">
-        <span class="tag tag-${c.level}">${c.levelLabel}</span>
+        <span class="tag ${levelClass}">${c.levelLabel}</span>
         <span class="tag tag-sp">${c.specialty}</span>
       </div>
       <button class="case-btn">Begin Consultation →</button>
