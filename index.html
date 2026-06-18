@@ -260,10 +260,25 @@ body{background:#050D1A;color:#e0ddd8;font-family:'Raleway',sans-serif;font-weig
 .reveal{opacity:0;}
 .reveal.visible{animation:revealUp .42s ease forwards;}
 
-@media(max-width:700px){
-  .grammar-panel{display:none;}
-  .cases-grid,.cases-hero,.feedback-body{padding-left:1.2rem;padding-right:1.2rem;}
-  .header,.consult-header{padding-left:1rem;padding-right:1rem;}
+@media(max-width:900px){
+  /* Hide grammar panel on tablets/mobile */
+  .grammar-panel{display:none !important;}
+
+  /* Consultation main takes full width */
+  .consult-main{max-width:100% !important;width:100% !important;}
+
+  /* Chat bubbles full width on mobile */
+  .msg{max-width:85% !important;}
+  .chat-area{padding:1rem !important;}
+  .input-area{padding:.8rem 1rem !important;}
+
+  /* Cases grid single column */
+  .cases-grid{padding-left:1rem !important;padding-right:1rem !important;grid-template-columns:1fr !important;}
+  .cases-hero{padding-left:1rem !important;padding-right:1rem !important;}
+  .section-label{padding-left:1rem !important;padding-right:1rem !important;}
+  .feedback-body{padding-left:1rem !important;padding-right:1rem !important;}
+  .header,.consult-header{padding-left:1rem !important;padding-right:1rem !important;}
+  .score-grid{grid-template-columns:1fr !important;}
 }
 </style>
 </head>
