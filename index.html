@@ -67,10 +67,12 @@ body{background:#050D1A;color:#e0ddd8;font-family:'Raleway',sans-serif;font-weig
 
 .cases-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.4rem;padding:0.6rem 3rem 4rem;width:100%;}
 
-.case-card{background:#fff;border:1px solid rgba(196,164,90,.3);border-radius:4px;padding:1.8rem;cursor:pointer;transition:border-color .25s,transform .25s,box-shadow .25s;position:relative;overflow:hidden;box-shadow:0 2px 12px rgba(11,29,58,.07);}
-.case-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:2px;background:linear-gradient(90deg,transparent,#C4A45A,transparent);opacity:0;transition:opacity .3s;}
-.case-card:hover{border-color:rgba(196,164,90,.6);transform:translateY(-3px);box-shadow:0 12px 32px rgba(11,29,58,.14);}
+.case-card{background:#fff;border:1px solid rgba(196,164,90,.25);border-radius:6px;padding:1.8rem;cursor:pointer;transition:transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .3s ease, border-color .3s ease;position:relative;overflow:hidden;box-shadow:0 2px 16px rgba(11,29,58,.08);transform:scale(1);}
+.case-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,#C4A45A,#D4BA7A,transparent);opacity:0;transition:opacity .35s ease;}
+.case-card::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(196,164,90,.04) 0%,transparent 60%);opacity:0;transition:opacity .3s ease;}
+.case-card:hover{border-color:rgba(196,164,90,.55);transform:scale(1.03);box-shadow:0 16px 48px rgba(11,29,58,.16),0 4px 16px rgba(196,164,90,.12);}
 .case-card:hover::before{opacity:1;}
+.case-card:hover::after{opacity:1;}
 
 
 .case-specialty{font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:#C4A45A;margin-bottom:.5rem;}
@@ -1755,17 +1757,39 @@ function updateStats() {
 // ════════════════════════════════════════
 // GRAMMAR ANALYSIS
 // ════════════════════════════════════════
-const GRAMMAR_SYSTEM = `You are a Medical English language coach specialising in clinical communication. Analyse the doctor's message on TWO dimensions:
+const GRAMMAR_SYSTEM = `You are a strict Medical English examiner analysing a single message sent by a doctor to a patient during a clinical consultation.
 
-1. GRAMMAR — tense accuracy, subject-verb agreement, article use, prepositions, word order
-2. DOCTOR-PATIENT REGISTER — Is the language appropriate for speaking TO a patient? Flag: overly technical jargon without explanation, cold or abrupt phrasing, missing empathy markers where appropriate, or conversely language that is too casual or unprofessional.
+Evaluate on TWO dimensions:
+
+1. GRAMMAR — tense accuracy, subject-verb agreement, articles, prepositions, word order, punctuation
+2. DOCTOR-PATIENT REGISTER — Is the language appropriate, professional, and patient-friendly?
+
+Flag ALL of the following as errors:
+- Any grammatical mistake, however small
+- Medical jargon used without explanation (e.g. "haemoptysis", "dyspnea", "onset" without context)
+- Abrupt or cold phrasing (e.g. "Describe the pain." → needs to be a proper question)
+- Missing politeness or empathy where appropriate
+- Overly casual language
+- Closed questions where open questions are better
+
+Good examples:
+- "Where exactly do you feel the pain?" ✓
+- "Have you noticed any blood when you cough?" ✓
+- "Can you tell me when this first started?" ✓
+- "How has this been affecting your daily life?" ✓
+
+Bad examples (flag these):
+- "Any haemoptysis?" → too abrupt, jargon
+- "Describe onset." → not a question, abrupt
+- "Do you present with dyspnea?" → clinical jargon inappropriate for patient
+- "Where is the pain located?" → acceptable but less natural than "Where do you feel the pain?"
 
 Return ONLY valid JSON (no markdown, no backticks):
 {
   "has_errors": true/false,
-  "corrected": "improved version of the sentence (same if perfect)",
-  "errors": ["brief specific error description", ...],
-  "comment": "one short constructive teaching note (max 25 words) — mention register if relevant",
+  "corrected": "improved version (identical if perfect)",
+  "errors": ["specific error with brief explanation"],
+  "comment": "one direct teaching note, max 20 words",
   "tenses_used": {
     "present_simple": true/false,
     "present_perfect": true/false,
@@ -1774,13 +1798,7 @@ Return ONLY valid JSON (no markdown, no backticks):
   }
 }
 
-Examples of register issues to flag:
-- "Where is the pain located?" → better as "Where exactly do you feel the pain?"
-- "Do you present with dyspnea?" → patient-facing language should be "Are you short of breath?"
-- "Describe the onset." → too abrupt; better "Can you tell me when it started?"
-- "Any haemoptysis?" → better "Have you coughed up any blood?"
-
-If the message is grammatically correct AND register-appropriate, set has_errors to false and give a positive comment.`;
+Be strict. Only mark has_errors=false if the message is genuinely correct in both grammar and register.`;
 
 async function analyseGrammar(doctorMsg, turnNum) {
   const raw = await callAPI(GRAMMAR_SYSTEM, [{
@@ -1923,29 +1941,66 @@ async function endSession() {
       grammarLog.map(g => `T${g.turn}: "${g.text}" ${g.analysis.has_errors ? '→ ' + g.analysis.corrected : '✓'}`).join("\n")
     : "";
 
-  const prompt = `You are a Medical English teaching expert evaluating a doctor's simulated clinical consultation in English.
+  // Extract ONLY doctor turns for evaluation
+  const doctorOnlyLines = chatHistory
+    .filter(m => m.role === "user")
+    .map((m, i) => `[Turn ${i+1}] ${m.content}`)
+    .join("\n");
+
+  const prompt = `You are a rigorous Medical English examiner. Your job is to evaluate ONLY the doctor's messages in a simulated clinical consultation. You will be given the doctor's turns in isolation — do not consider the patient's responses in your language evaluation.
 
 STUDENT: ${studentName}
 CASE: ${activeCase.name}, ${activeCase.age}y, ${activeCase.specialty}
-CLINICAL GOALS: ${activeCase.clinicalGoals.join(", ")}
+CLINICAL GOALS TO COVER: ${activeCase.clinicalGoals.join(", ")}
 
-TRANSCRIPT:
+DOCTOR'S MESSAGES ONLY:
+${doctorOnlyLines}
+
+FULL TRANSCRIPT (for clinical assessment only — to check what was explored):
 ${transcript}
+
+EVALUATION CRITERIA — be rigorous and specific. Do not be lenient.
+
+ENGLISH (assess ONLY the doctor's messages):
+- Grammar accuracy: tense consistency, subject-verb agreement, article use, prepositions
+- Vocabulary: precision, appropriate medical register, avoidance of unnecessary jargon with patients
+- Sentence structure: clarity, fluency, professional phrasing
+- Doctor-patient communication style: open vs closed questions, empathy markers, professional tone
+- Penalise: grammatical errors, vague questions, jargon without explanation, abrupt phrasing, missing politeness
+
+CLINICAL (assess based on full transcript):
+- Systematic history-taking: did the doctor cover the key clinical goals?
+- Organisation: logical sequence of questions
+- Patient-centred approach: did the doctor respond to patient concerns and questions?
+- Closure: did the doctor summarise, explain next steps, and close appropriately?
+- Penalise: skipped clinical areas, ignored patient questions, abrupt or incomplete closure
+
+SCORING:
+- 90–100: Near-perfect. Almost no errors.
+- 75–89: Good, minor issues.
+- 60–74: Adequate, several clear errors.
+- 45–59: Below standard, significant gaps.
+- Below 45: Poor performance, major problems.
+
 ${grammarSummary}
 
 Return ONLY valid JSON (no markdown, no backticks):
 {
   "english_score": <0-100>,
   "clinical_score": <0-100>,
-  "english_good": ["specific strength", ...],
-  "english_improve": ["specific suggestion", ...],
-  "clinical_good": ["specific strength", ...],
-  "clinical_improve": ["specific suggestion", ...],
-  "missed_goals": ["goal not explored", ...],
-  "closure": "brief assessment of how the consultation was closed — did the doctor summarise findings, explain next steps, respond to patient questions, and say goodbye appropriately? (1–2 sentences)"
+  "english_good": ["specific strength with example from the doctor's words", ...],
+  "english_improve": ["specific error or weakness with example and correction", ...],
+  "clinical_good": ["specific clinical strength observed", ...],
+  "clinical_improve": ["specific clinical gap or weakness", ...],
+  "missed_goals": ["clinical goal not explored or insufficiently covered", ...],
+  "closure": "Specific assessment of how the consultation ended. Was there a summary? Were next steps explained? Did the doctor respond to the patient's questions before closing?"
 }
 
-2–3 items per array. Specific, actionable, encouraging.`;
+Rules:
+- 2–4 items per array. Be specific — quote or paraphrase the doctor's actual words where relevant.
+- Never praise vague effort. Only praise concrete strengths.
+- english_improve and clinical_improve must identify real problems, not generic suggestions.
+- missed_goals must list ONLY goals that were genuinely not addressed.`;
 
   try {
     const raw = await callAPI("You return only valid JSON. No markdown.", [{ role:"user", content: prompt }]);
