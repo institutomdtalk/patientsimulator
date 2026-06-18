@@ -325,6 +325,7 @@ body{background:#050D1A;color:#e0ddd8;font-family:'Raleway',sans-serif;font-weig
 
 <!-- ══════════ NAME ══════════ -->
 <div id="screen-name" class="screen active">
+  <span id="student-badge" style="display:none;"></span>
   <div id="screen-name-body" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;">
     <div class="name-card">
       
@@ -1611,7 +1612,6 @@ function enterLab() {
     return;
   }
   studentName = name;
-  document.getElementById("student-badge").textContent = "Dr. " + name;
   showCases();
 }
 
