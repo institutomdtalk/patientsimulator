@@ -36,7 +36,7 @@ body{background:#050D1A;color:#e0ddd8;font-family:'Raleway',sans-serif;font-weig
 .screen{display:none;}
 .screen.active{display:block;}
 #screen-consultation{display:none;}
-#screen-consultation.active{display:flex;flex-direction:row;width:100%;height:100vh;overflow:hidden;background:#f5f0e8;position:fixed;top:0;left:0;right:0;bottom:0;}
+#screen-consultation.active{display:flex;flex-direction:row;width:100%;height:100vh;overflow:hidden;background:#f5f0e8;}
 
 /* ── NAME SCREEN ── */
 #screen-name{min-height:100vh;display:flex;flex-direction:column;}
@@ -88,10 +88,8 @@ body{background:#050D1A;color:#e0ddd8;font-family:'Raleway',sans-serif;font-weig
 .case-btn:hover{background:#0B1D3A;color:#fff;border-color:#050D1A;}
 
 /* ── CONSULTATION SCREEN ── */
-#screen-consultation{flex-direction:row;position:fixed;inset:0;z-index:20;background:#050D1A;}
-
 /* Main chat column */
-.consult-main{display:flex;flex-direction:column;flex:1;min-width:0;max-width:calc(100% - 300px);overflow:hidden;background:#f5f0e8;}
+.consult-main{display:flex;flex-direction:column;flex:1;min-width:0;width:calc(100% - 300px);max-width:calc(100% - 300px);overflow:hidden;background:#f5f0e8;}
 .consult-header{padding:1rem 2rem;border-bottom:1px solid rgba(196,164,90,.25);display:flex;align-items:center;gap:1rem;flex-shrink:0;background:#fff;box-shadow:0 1px 8px rgba(11,29,58,.06);}
 .back-btn{background:none;border:none;color:rgba(11,29,58,.4);cursor:pointer;font-family:'Raleway',sans-serif;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;transition:color .2s;white-space:nowrap;}
 .back-btn:hover{color:#C4A45A;}
