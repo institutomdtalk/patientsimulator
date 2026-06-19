@@ -2054,7 +2054,9 @@ Evaluate on THREE dimensions:
 
 1. GRAMMAR
 - Tense accuracy, subject-verb agreement, articles, prepositions, word order
-- Do NOT flag capitalisation — irrelevant in typed consultations
+- Do NOT flag: capitalisation, punctuation, quotation marks, or formatting — all irrelevant in typed consultations
+- Do NOT flag informal but clear phrasing that would be acceptable in natural spoken English
+- Only flag errors that would genuinely confuse a patient or reveal poor English proficiency
 
 2. DOCTOR-PATIENT REGISTER
 - Is the language appropriate, warm, and professional for speaking TO a patient?
@@ -2102,7 +2104,7 @@ Return ONLY valid JSON (no markdown, no backticks):
   }
 }
 
-Be strict. Only mark has_errors=false if genuinely correct in ALL three dimensions.`;
+Be fair and clinically relevant. Only flag issues that would genuinely affect communication with a patient or reveal a real language gap. Minor stylistic preferences are NOT errors. Mark has_errors=false if the message is clear, professional, and communicatively effective.`;
 
 async function analyseGrammar(doctorMsg, turnNum) {
   const raw = await callAPI(GRAMMAR_SYSTEM, [{
