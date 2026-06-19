@@ -188,7 +188,7 @@ body{background:#050D1A;color:#e0ddd8;font-family:'Raleway',sans-serif;font-weig
 .send-btn:disabled{opacity:.28;cursor:not-allowed;}
 
 /* ── GRAMMAR PANEL ── */
-.grammar-panel{
+.perf-panel{
   width:300px;min-width:300px;max-width:300px;flex-shrink:0;
   background:#0d1f3a;
   border-left:1px solid rgba(196,164,90,.2);
@@ -315,8 +315,8 @@ body{background:#050D1A;color:#e0ddd8;font-family:'Raleway',sans-serif;font-weig
 .reveal.visible{animation:revealUp .42s ease forwards;}
 
 @media(max-width:900px){
-  /* Hide grammar panel on tablets/mobile */
-  .grammar-panel{display:none !important;}
+  /* Hide performance panel on tablets/mobile */
+  .perf-panel{display:none !important;}
 
   /* Consultation main takes full width */
   .consult-main{max-width:100% !important;width:100% !important;}
@@ -361,7 +361,7 @@ body{background:#050D1A;color:#e0ddd8;font-family:'Raleway',sans-serif;font-weig
     <h1 class="greeting-title" id="greeting-title">Hello, <em>Dr. —</em></h1>
     <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(2.2rem,5vw,3.2rem);font-weight:300;color:#ffffff;margin-bottom:.4rem;">Choose your <em style="font-style:italic;color:#C4A45A;">patient</em></h2>
     <div class="divider"></div>
-    <p>Select a case and conduct the consultation in English. You'll receive real-time grammar feedback and a full evaluation at the end.</p>
+    <p>Select a case and conduct the consultation in English. You'll receive real-time performance feedback and a full evaluation at the end.</p>
   </div>
   <div class="section-label" id="section-main-label" style="display:none;">General Practice &amp; Internal Medicine</div>
   <div class="cases-grid" id="cases-grid-main" style="display:none;padding-bottom:.5rem;"></div>
@@ -404,11 +404,11 @@ body{background:#050D1A;color:#e0ddd8;font-family:'Raleway',sans-serif;font-weig
     </div>
   </div>
 
-  <!-- Grammar Panel -->
-  <div class="grammar-panel" id="grammar-panel">
+  <!-- Performance Panel -->
+  <div class="perf-panel" id="perf-panel">
     <div class="panel-header">
-      <div class="panel-title">Grammar <em>Monitor</em></div>
-      <div class="panel-sub">Real-time language feedback</div>
+      <div class="panel-title">Performance <em>Monitor</em></div>
+      <div class="panel-sub">Real-time performance feedback</div>
       <div class="panel-stats">
         <div class="stat-box"><div class="stat-num" id="stat-turns">0</div><div class="stat-lbl">Turns</div></div>
         <div class="stat-box"><div class="stat-num" id="stat-errors">0</div><div class="stat-lbl">Errors</div></div>
@@ -418,7 +418,7 @@ body{background:#050D1A;color:#e0ddd8;font-family:'Raleway',sans-serif;font-weig
     <div class="panel-body" id="panel-body">
       <div class="panel-empty" id="panel-empty">
         <div class="panel-empty-icon">✦</div>
-        <div>Your grammar feedback will appear here as you speak to the patient.</div>
+        <div>Your performance feedback will appear here as you speak to the patient.</div>
       </div>
     </div>
     <div class="panel-footer">
@@ -1980,7 +1980,7 @@ async function startCase(id) {
   document.getElementById("doctor-badge").textContent = "Dr. " + studentName;
 
   // Reset panel
-  document.getElementById("panel-body").innerHTML = `<div class="panel-empty" id="panel-empty"><div class="panel-empty-icon">✦</div><div>Your grammar feedback will appear here as you speak to the patient.</div></div>`;
+  document.getElementById("panel-body").innerHTML = `<div class="panel-empty" id="panel-empty"><div class="panel-empty-icon">✦</div><div>Your performance feedback will appear here as you speak to the patient.</div></div>`;
   updateStats();
 
   document.getElementById("chat-area").innerHTML = "";
@@ -2253,6 +2253,15 @@ async function endSession() {
     .map((m, i) => `[Turn ${i+1}] ${m.content}`)
     .join("\n");
 
+  // Truncate transcript to avoid URL length limits (JSONP GET)
+  const maxTranscriptLen = 2000;
+  const transcriptTrunc = transcript.length > maxTranscriptLen 
+    ? transcript.slice(-maxTranscriptLen) + "\n[transcript truncated]"
+    : transcript;
+  const doctorLinesTrunc = doctorOnlyLines.length > 1500
+    ? doctorOnlyLines.slice(-1500)
+    : doctorOnlyLines;
+
   const prompt = `You are a rigorous Medical English examiner. Your job is to evaluate ONLY the doctor's messages in a simulated clinical consultation. You will be given the doctor's turns in isolation — do not consider the patient's responses in your language evaluation.
 
 STUDENT: ${studentName}
@@ -2260,33 +2269,13 @@ CASE: ${activeCase.name}, ${activeCase.age}y, ${activeCase.specialty}
 CLINICAL GOALS TO COVER: ${activeCase.clinicalGoals.join(", ")}
 
 DOCTOR'S MESSAGES ONLY:
-${doctorOnlyLines}
+${doctorLinesTrunc}
 
-FULL TRANSCRIPT (for clinical assessment only — to check what was explored):
-${transcript}
+FULL TRANSCRIPT (for clinical assessment only):
+${transcriptTrunc}
 
-EVALUATION CRITERIA — be rigorous and specific. Do not be lenient.
-
-ENGLISH (assess ONLY the doctor's messages):
-- Grammar accuracy: tense consistency, subject-verb agreement, article use, prepositions
-- Vocabulary: precision, appropriate medical register, avoidance of unnecessary jargon with patients
-- Sentence structure: clarity, fluency, professional phrasing
-- Doctor-patient communication style: open vs closed questions, empathy markers, professional tone
-- Penalise: grammatical errors, vague questions, jargon without explanation, abrupt phrasing, missing politeness
-
-CLINICAL (assess based on full transcript):
-- Systematic history-taking: did the doctor cover the key clinical goals?
-- Organisation: logical sequence of questions
-- Patient-centred approach: did the doctor respond to patient concerns and questions?
-- Closure: did the doctor summarise, explain next steps, and close appropriately?
-- Penalise: skipped clinical areas, ignored patient questions, abrupt or incomplete closure
-
-SCORING:
-- 90–100: Near-perfect. Almost no errors.
-- 75–89: Good, minor issues.
-- 60–74: Adequate, several clear errors.
-- 45–59: Below standard, significant gaps.
-- Below 45: Poor performance, major problems.
+SCORING: 90-100 near-perfect, 75-89 good, 60-74 adequate, below 60 significant problems.
+Assess English (grammar, register, question types) and Clinical (history coverage, organisation, closure).
 
 ${grammarSummary}
 
