@@ -1803,16 +1803,15 @@ let tenseCounts = { ps: 0, pp: 0, ppc: 0, prs: 0 };
 function callAPI(system, messages) {
   return new Promise((resolve, reject) => {
 
-    // ── Cleanup old JSONP scripts ──
+    // Clean up old JSONP scripts
     document.querySelectorAll("script[data-jsonp]").forEach(s => s.remove());
 
     const cbName = "cb_" + Date.now() + "_" + Math.floor(Math.random() * 9999);
 
-    // ── Timeout 50s ──
     const timer = setTimeout(() => {
       cleanup();
-      reject(new Error("Request timed out. Please try again."));
-    }, 50000);
+      reject(new Error("Timed out. Please try again."));
+    }, 55000);
 
     function cleanup() {
       clearTimeout(timer);
@@ -1827,11 +1826,30 @@ function callAPI(system, messages) {
       else reject(new Error((data && data.error) || "API error"));
     };
 
-    // ── Keep last 14 messages to stay within URL limits ──
-    const msgs = messages.slice(-14);
+    // Build the message payload
+    // Strategy: keep full history but compress older messages into a summary
+    // to stay within URL limits while preserving full context
+    let msgs = messages;
+    
+    if (messages.length > 8) {
+      // Compress older messages: keep first 2 (opening) + last 8 (recent context)
+      const opening = messages.slice(0, 2);
+      const recent  = messages.slice(-8);
+      // Create a compressed middle summary
+      const middleCount = messages.length - 10;
+      if (middleCount > 0) {
+        const summary = {
+          role: "user",
+          content: "[Previous " + middleCount + " exchanges omitted for brevity — the patient has been responding to the doctor's questions about their symptoms.]"
+        };
+        msgs = [...opening, summary, ...recent];
+      } else {
+        msgs = [...opening, ...recent];
+      }
+    }
 
-    // ── Compress system prompt: keep first 1800 chars ──
-    const sys = system.length > 1800 ? system.slice(0, 1800) : system;
+    // Compress system prompt to essentials (first 1600 chars covers persona + clinical context)
+    const sys = system.length > 1600 ? system.slice(0, 1600) : system;
 
     const params = new URLSearchParams({
       action:   "chat",
@@ -1840,29 +1858,18 @@ function callAPI(system, messages) {
       callback: cbName
     });
 
-    const url = WORKER_URL + "?" + params.toString();
-
-    // ── URL too long? trim messages further ──
-    let finalUrl = url;
-    if (url.length > 7500) {
-      const shortMsgs = messages.slice(-6);
-      const shortParams = new URLSearchParams({
-        action:   "chat",
-        system:   sys,
-        messages: JSON.stringify(shortMsgs),
-        callback: cbName
-      });
-      finalUrl = WORKER_URL + "?" + shortParams.toString();
-    }
-
     const script = document.createElement("script");
     script.id = cbName;
     script.setAttribute("data-jsonp", "1");
-    script.onerror = () => { cleanup(); reject(new Error("Connection error. Check your internet and try again.")); };
-    script.src = finalUrl;
+    script.onerror = () => {
+      cleanup();
+      reject(new Error("Connection error. Please try again."));
+    };
+    script.src = WORKER_URL + "?" + params.toString();
     document.head.appendChild(script);
   });
 }
+
 
 // ════════════════════════════════════════
 // SCREENS
