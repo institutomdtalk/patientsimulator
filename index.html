@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; connect-src 'self' https://script.google.com https://script.googleusercontent.com https://api.openai.com;">
 <title>MD Talk — Virtual Patient Simulator</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -1801,79 +1802,24 @@ let tenseCounts = { ps: 0, pp: 0, ppc: 0, prs: 0 };
 // API — JSONP (sem CORS, compatível com Apps Script)
 // ════════════════════════════════════════
 function callAPI(system, messages) {
-  return new Promise((resolve, reject) => {
+  // Keep last 30 messages — enough for a full consultation
+  const trimmed = messages.slice(-30);
 
-    // Clean up old JSONP scripts
-    document.querySelectorAll("script[data-jsonp]").forEach(s => s.remove());
-
-    const cbName = "cb_" + Date.now() + "_" + Math.floor(Math.random() * 9999);
-
-    const timer = setTimeout(() => {
-      cleanup();
-      reject(new Error("Timed out. Please try again."));
-    }, 55000);
-
-    function cleanup() {
-      clearTimeout(timer);
-      delete window[cbName];
-      const s = document.getElementById(cbName);
-      if (s) s.remove();
-    }
-
-    window[cbName] = function(data) {
-      cleanup();
-      console.log("MDTALK JSONP response:", JSON.stringify(data));
-      if (!data) { reject(new Error("Empty response")); return; }
-      const text = data.text
-                || data.content?.[0]?.text
-                || data.choices?.[0]?.message?.content
-                || null;
-      if (text) resolve(text);
-      else reject(new Error(data.error || "No text in response. Raw: " + JSON.stringify(data)));
-    };
-
-    // Build the message payload
-    // Strategy: keep full history but compress older messages into a summary
-    // to stay within URL limits while preserving full context
-    let msgs = messages;
-    
-    if (messages.length > 8) {
-      // Compress older messages: keep first 2 (opening) + last 8 (recent context)
-      const opening = messages.slice(0, 2);
-      const recent  = messages.slice(-8);
-      // Create a compressed middle summary
-      const middleCount = messages.length - 10;
-      if (middleCount > 0) {
-        const summary = {
-          role: "user",
-          content: "[Previous " + middleCount + " exchanges omitted for brevity — the patient has been responding to the doctor's questions about their symptoms.]"
-        };
-        msgs = [...opening, summary, ...recent];
-      } else {
-        msgs = [...opening, ...recent];
-      }
-    }
-
-    // Compress system prompt to essentials (first 1600 chars covers persona + clinical context)
-    const sys = system.length > 1600 ? system.slice(0, 1600) : system;
-
-    const params = new URLSearchParams({
-      action:   "chat",
-      system:   sys,
-      messages: JSON.stringify(msgs),
-      callback: cbName
-    });
-
-    const script = document.createElement("script");
-    script.id = cbName;
-    script.setAttribute("data-jsonp", "1");
-    script.onerror = () => {
-      cleanup();
-      console.error("MDTALK script load error. URL length:", script.src.length, "URL:", script.src.slice(0,200));
-      reject(new Error("Connection error — URL length: " + script.src.length));
-    };
-    script.src = WORKER_URL + "?" + params.toString();
-    document.head.appendChild(script);
+  return fetch(WORKER_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ system, messages: trimmed }),
+    redirect: "follow"
+  })
+  .then(async res => {
+    const raw = await res.text();
+    console.log("MDTALK raw response:", raw.slice(0, 200));
+    // HtmlService wraps JSON in HTML — extract JSON from it
+    const match = raw.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error("No JSON in response");
+    const data = JSON.parse(match[0]);
+    if (data.ok && data.text) return data.text;
+    throw new Error(data.error || "No text in response");
   });
 }
 
