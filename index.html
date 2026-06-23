@@ -1805,37 +1805,29 @@ function callAPI(system, messages) {
   const trimmed = messages.slice(-30);
   const body = JSON.stringify({ system, messages: trimmed });
 
-  // Apps Script redireciona POST para googleusercontent.com
-  // Precisamos seguir o redirect manualmente para preservar CORS
+  // Step 1: try direct POST with follow redirect
   return fetch(WORKER_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: body,
-    redirect: "manual"   // captura o redirect sem segui-lo
+    redirect: "follow"
   })
   .then(res => {
-    // Se for redirect (308), busca a URL de destino diretamente
-    if (res.type === "opaqueredirect" || res.status === 0 || (res.status >= 300 && res.status < 400)) {
-      const redirectUrl = res.headers.get("Location") || res.url;
-      if (redirectUrl) {
-        return fetch(redirectUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: body
-        });
-      }
-    }
-    return res;
+    console.log("MDTALK status:", res.status, "type:", res.type, "url:", res.url.slice(0,80));
+    return res.text();
   })
-  .then(res => res.text())
   .then(raw => {
-    console.log("MDTALK response:", raw.slice(0, 300));
-    // Extract JSON from possible HTML wrapper
+    console.log("MDTALK raw:", raw.slice(0, 400));
     const match = raw.match(/\{[\s\S]*\}/);
-    if (!match) throw new Error("Invalid response format");
+    if (!match) throw new Error("Response: " + raw.slice(0,100));
     const data = JSON.parse(match[0]);
     if (data.ok && data.text) return data.text;
-    throw new Error(data.error || "No text in response");
+    if (data.text) return data.text;
+    throw new Error(data.error || JSON.stringify(data).slice(0,100));
+  })
+  .catch(err => {
+    console.error("MDTALK error:", err.message);
+    throw new Error(err.message);
   });
 }
 
