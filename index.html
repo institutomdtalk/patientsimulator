@@ -1802,11 +1802,16 @@ let tenseCounts = { ps: 0, pp: 0, ppc: 0, prs: 0 };
 // ════════════════════════════════════════
 function callAPI(system, messages) {
   return new Promise((resolve, reject) => {
+    // Clean up any leftover JSONP script tags from previous calls
+    document.querySelectorAll("script[data-jsonp]").forEach(s => s.remove());
+
     const cbName = "cb_" + Date.now() + "_" + Math.floor(Math.random() * 9999);
     const timeout = setTimeout(() => {
       delete window[cbName];
-      reject(new Error("Timeout"));
-    }, 30000);
+      const s = document.getElementById(cbName);
+      if (s) s.remove();
+      reject(new Error("Timeout — the request took too long. Please try again."));
+    }, 45000);
 
     window[cbName] = function(data) {
       clearTimeout(timeout);
@@ -1820,16 +1825,32 @@ function callAPI(system, messages) {
       }
     };
 
+    // Trim conversation history to last 12 messages to avoid URL length limits
+    const trimmedMessages = messages.slice(-12);
+
+    // Truncate system prompt to 2000 chars if too long
+    const trimmedSystem = system.length > 2000 ? system.slice(0, 2000) : system;
+
     const params = new URLSearchParams({
       action: "chat",
-      system: system,
-      messages: encodeURIComponent(JSON.stringify(messages)),
+      system: trimmedSystem,
+      messages: encodeURIComponent(JSON.stringify(trimmedMessages)),
       callback: cbName
     });
 
+    // Check URL length — warn if too long
+    const fullURL = WORKER_URL + "?" + params.toString();
+    if (fullURL.length > 7000) {
+      clearTimeout(timeout);
+      delete window[cbName];
+      reject(new Error("Message too long. Please continue the conversation normally."));
+      return;
+    }
+
     const script = document.createElement("script");
     script.id = cbName;
-    script.src = WORKER_URL + "?" + params.toString();
+    script.setAttribute("data-jsonp", "true");
+    script.src = fullURL;
     script.onerror = () => {
       clearTimeout(timeout);
       delete window[cbName];
