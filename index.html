@@ -1801,25 +1801,66 @@ let tenseCounts = { ps: 0, pp: 0, ppc: 0, prs: 0 };
 // API — JSONP (sem CORS, compatível com Apps Script)
 // ════════════════════════════════════════
 function callAPI(system, messages) {
-  // Keep last 20 messages max
-  const trimmedMessages = messages.slice(-20);
-  const payload = JSON.stringify({ system, messages: trimmedMessages });
+  return new Promise((resolve, reject) => {
 
-  // Apps Script redirects POST — we follow the redirect to googleusercontent.com
-  // which supports CORS. We retry once on redirect.
-  return fetch(WORKER_URL, {
-    method: "POST",
-    headers: { "Content-Type": "text/plain" }, // text/plain avoids CORS preflight
-    body: payload,
-    redirect: "follow"
-  })
-  .then(async res => {
-    const text = await res.text();
-    let data;
-    try { data = JSON.parse(text); }
-    catch(e) { throw new Error("Invalid response from server"); }
-    if (!data.ok) throw new Error(data.error || "API error");
-    return data.text;
+    // ── Cleanup old JSONP scripts ──
+    document.querySelectorAll("script[data-jsonp]").forEach(s => s.remove());
+
+    const cbName = "cb_" + Date.now() + "_" + Math.floor(Math.random() * 9999);
+
+    // ── Timeout 50s ──
+    const timer = setTimeout(() => {
+      cleanup();
+      reject(new Error("Request timed out. Please try again."));
+    }, 50000);
+
+    function cleanup() {
+      clearTimeout(timer);
+      delete window[cbName];
+      const s = document.getElementById(cbName);
+      if (s) s.remove();
+    }
+
+    window[cbName] = function(data) {
+      cleanup();
+      if (data && data.ok) resolve(data.text);
+      else reject(new Error((data && data.error) || "API error"));
+    };
+
+    // ── Keep last 14 messages to stay within URL limits ──
+    const msgs = messages.slice(-14);
+
+    // ── Compress system prompt: keep first 1800 chars ──
+    const sys = system.length > 1800 ? system.slice(0, 1800) : system;
+
+    const params = new URLSearchParams({
+      action:   "chat",
+      system:   sys,
+      messages: JSON.stringify(msgs),
+      callback: cbName
+    });
+
+    const url = WORKER_URL + "?" + params.toString();
+
+    // ── URL too long? trim messages further ──
+    let finalUrl = url;
+    if (url.length > 7500) {
+      const shortMsgs = messages.slice(-6);
+      const shortParams = new URLSearchParams({
+        action:   "chat",
+        system:   sys,
+        messages: JSON.stringify(shortMsgs),
+        callback: cbName
+      });
+      finalUrl = WORKER_URL + "?" + shortParams.toString();
+    }
+
+    const script = document.createElement("script");
+    script.id = cbName;
+    script.setAttribute("data-jsonp", "1");
+    script.onerror = () => { cleanup(); reject(new Error("Connection error. Check your internet and try again.")); };
+    script.src = finalUrl;
+    document.head.appendChild(script);
   });
 }
 
