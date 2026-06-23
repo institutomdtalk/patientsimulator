@@ -1801,62 +1801,25 @@ let tenseCounts = { ps: 0, pp: 0, ppc: 0, prs: 0 };
 // API — JSONP (sem CORS, compatível com Apps Script)
 // ════════════════════════════════════════
 function callAPI(system, messages) {
-  return new Promise((resolve, reject) => {
-    // Clean up any leftover JSONP script tags from previous calls
-    document.querySelectorAll("script[data-jsonp]").forEach(s => s.remove());
+  // Keep last 20 messages max
+  const trimmedMessages = messages.slice(-20);
+  const payload = JSON.stringify({ system, messages: trimmedMessages });
 
-    const cbName = "cb_" + Date.now() + "_" + Math.floor(Math.random() * 9999);
-    const timeout = setTimeout(() => {
-      delete window[cbName];
-      const s = document.getElementById(cbName);
-      if (s) s.remove();
-      reject(new Error("Timeout — the request took too long. Please try again."));
-    }, 45000);
-
-    window[cbName] = function(data) {
-      clearTimeout(timeout);
-      delete window[cbName];
-      const script = document.getElementById(cbName);
-      if (script) script.remove();
-      if (data.ok) {
-        resolve(data.text);
-      } else {
-        reject(new Error(data.error || "API error"));
-      }
-    };
-
-    // Trim conversation history to last 12 messages to avoid URL length limits
-    const trimmedMessages = messages.slice(-12);
-
-    // Truncate system prompt to 2000 chars if too long
-    const trimmedSystem = system.length > 2000 ? system.slice(0, 2000) : system;
-
-    const params = new URLSearchParams({
-      action: "chat",
-      system: trimmedSystem,
-      messages: encodeURIComponent(JSON.stringify(trimmedMessages)),
-      callback: cbName
-    });
-
-    // Check URL length — warn if too long
-    const fullURL = WORKER_URL + "?" + params.toString();
-    if (fullURL.length > 7000) {
-      clearTimeout(timeout);
-      delete window[cbName];
-      reject(new Error("Message too long. Please continue the conversation normally."));
-      return;
-    }
-
-    const script = document.createElement("script");
-    script.id = cbName;
-    script.setAttribute("data-jsonp", "true");
-    script.src = fullURL;
-    script.onerror = () => {
-      clearTimeout(timeout);
-      delete window[cbName];
-      reject(new Error("Script load error"));
-    };
-    document.head.appendChild(script);
+  // Apps Script redirects POST — we follow the redirect to googleusercontent.com
+  // which supports CORS. We retry once on redirect.
+  return fetch(WORKER_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain" }, // text/plain avoids CORS preflight
+    body: payload,
+    redirect: "follow"
+  })
+  .then(async res => {
+    const text = await res.text();
+    let data;
+    try { data = JSON.parse(text); }
+    catch(e) { throw new Error("Invalid response from server"); }
+    if (!data.ok) throw new Error(data.error || "API error");
+    return data.text;
   });
 }
 
