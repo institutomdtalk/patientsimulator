@@ -1822,8 +1822,15 @@ function callAPI(system, messages) {
 
     window[cbName] = function(data) {
       cleanup();
-      if (data && data.ok) resolve(data.text);
-      else reject(new Error((data && data.error) || "API error"));
+      if (!data) { reject(new Error("Empty response")); return; }
+      // Handle multiple possible response formats
+      const text = data.text
+                || data.content?.[0]?.text
+                || data.choices?.[0]?.message?.content
+                || null;
+      if (data.ok && text) resolve(text);
+      else if (text) resolve(text);
+      else reject(new Error(data.error || "No text in response"));
     };
 
     // Build the message payload
