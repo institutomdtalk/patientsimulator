@@ -1802,21 +1802,37 @@ let tenseCounts = { ps: 0, pp: 0, ppc: 0, prs: 0 };
 // API — JSONP (sem CORS, compatível com Apps Script)
 // ════════════════════════════════════════
 function callAPI(system, messages) {
-  // Keep last 30 messages — enough for a full consultation
   const trimmed = messages.slice(-30);
+  const body = JSON.stringify({ system, messages: trimmed });
 
+  // Apps Script redireciona POST para googleusercontent.com
+  // Precisamos seguir o redirect manualmente para preservar CORS
   return fetch(WORKER_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ system, messages: trimmed }),
-    redirect: "follow"
+    body: body,
+    redirect: "manual"   // captura o redirect sem segui-lo
   })
-  .then(async res => {
-    const raw = await res.text();
-    console.log("MDTALK raw response:", raw.slice(0, 200));
-    // HtmlService wraps JSON in HTML — extract JSON from it
+  .then(res => {
+    // Se for redirect (308), busca a URL de destino diretamente
+    if (res.type === "opaqueredirect" || res.status === 0 || (res.status >= 300 && res.status < 400)) {
+      const redirectUrl = res.headers.get("Location") || res.url;
+      if (redirectUrl) {
+        return fetch(redirectUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: body
+        });
+      }
+    }
+    return res;
+  })
+  .then(res => res.text())
+  .then(raw => {
+    console.log("MDTALK response:", raw.slice(0, 300));
+    // Extract JSON from possible HTML wrapper
     const match = raw.match(/\{[\s\S]*\}/);
-    if (!match) throw new Error("No JSON in response");
+    if (!match) throw new Error("Invalid response format");
     const data = JSON.parse(match[0]);
     if (data.ok && data.text) return data.text;
     throw new Error(data.error || "No text in response");
